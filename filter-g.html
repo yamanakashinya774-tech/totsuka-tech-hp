@@ -293,6 +293,11 @@
     .flow-step h3 { font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:10px; text-shadow:0 1px 18px rgba(0,0,0,1),0 2px 30px rgba(0,0,0,0.9); }
     .flow-step p { font-family:'Noto Sans JP',sans-serif; font-size:11.5px; color:rgba(255,255,255,.80); line-height:2.0; text-shadow:0 1px 14px rgba(0,0,0,1),0 2px 24px rgba(0,0,0,0.9); }
 
+    /* CTA section (desktop: hidden, mobile: standalone text section) */
+    #sec-cta { display:none; background:rgba(4,9,4,0.95); }
+    .cta-inner { padding:0 64px; display:flex; flex-direction:column; justify-content:center; height:100%; max-width:600px; position:relative; }
+    .cta-desc { font-family:'Noto Sans JP',sans-serif; font-size:13px; color:rgba(255,255,255,.50); line-height:2.1; margin-bottom:28px; }
+
     /* Contact — 2-column split */
     #sec-contact {
       background: linear-gradient(
@@ -607,14 +612,27 @@
       .flow-steps::before { display:none; }
       .flow-step-dot { margin-bottom:10px; }
 
-      /* ── Contact ── */
+      /* ── CTA (mobile only) ── */
+      #sec-cta {
+        display:flex !important;
+        align-items:flex-start !important;
+        overflow-y:auto;
+      }
+      .cta-inner {
+        padding:80px 20px 40px !important;
+        height:auto !important;
+      }
+      .cta-desc { font-size:12px; }
+
+      /* ── Contact (form only on mobile) ── */
       #sec-contact {
         grid-template-columns: 1fr !important;
-        grid-template-rows: auto auto;
         overflow-y: auto;
         align-items: flex-start !important;
         background: rgba(4,9,4,0.97) !important;
       }
+      /* contact-leftはモバイルでは非表示（sec-ctaで代替） */
+      #sec-contact .contact-left { display:none !important; }
       .contact-ghost { display:none; }
       .contact-left {
         position: sticky;
@@ -857,7 +875,6 @@
       <span class="rv-line">だから、守れる。</span>
     </h2>
     <p class="rv-fade rv-d2">現役バグハンターが直接担当する、成功報酬型の脆弱性診断。<br>HackerOne・Bugcrowdでの実績を持つ本物の攻撃者視点と、<br>AIによる広範囲スキャンで、見落としのないセキュリティを実現します。</p>
-    <a href="#" class="btn-link rv-fade rv-d3">View More <span class="arr">→</span></a>
   </div>
 </div>
 
@@ -986,7 +1003,36 @@
   </div>
 </div>
 
-<!-- 6: Contact -->
+<!-- 6: CTA (text only – desktop hidden, mobile shown as separate section) -->
+<div id="sec-cta" class="sec-overlay">
+  <div class="cta-inner">
+    <span class="contact-ghost">CONTACT</span>
+    <span class="section-label rv-fade">Get In Touch</span>
+    <h2 class="rv-fade rv-d1">あなたのサービス、<br>安全ですか？</h2>
+    <p class="cta-desc rv-fade rv-d2">
+      脆弱性は、発見されるまで存在しないわけではありません。<br>
+      まず相談ください。最短数日で診断を開始します。
+    </p>
+    <div class="contact-left-rule rv-fade rv-d3"></div>
+    <div class="contact-left-info rv-fade rv-d3">
+      <div class="contact-info-item">
+        <span class="contact-info-label">Email</span>
+        <span class="contact-info-val">contact@totsuka-tech.com</span>
+      </div>
+      <div class="contact-info-item">
+        <span class="contact-info-label">Response</span>
+        <span class="contact-info-val">通常48時間以内にご返答</span>
+      </div>
+      <div class="contact-info-item">
+        <span class="contact-info-label">First Call</span>
+        <span class="contact-info-val">30分 / オンライン無料相談</span>
+      </div>
+    </div>
+    <a href="#sec-contact" class="btn-link rv-fade rv-d4" style="margin-top:28px;">フォームへ <span class="arr">→</span></a>
+  </div>
+</div>
+
+<!-- 7: Contact (form) -->
 <div id="sec-contact" class="sec-overlay">
 
   <!-- Left: Brand info -->
@@ -1237,13 +1283,14 @@ if (hamburgerBtn && mobileNav) {
 }
 
 /* ── Nav scroll: #sec-* anchor → scroll zone position ── */
+const isMobile = window.innerWidth <= 768;
 const NAV_SP = {
-  'sec-about':   0.12,
-  'sec-whyus':   0.29,
-  'sec-service': 0.46,
-  'sec-vision':  0.57,
-  'sec-flow':    0.68,
-  'sec-contact': 0.84,
+  'sec-about':   isMobile ? 0.12 : 0.12,
+  'sec-whyus':   isMobile ? 0.25 : 0.29,
+  'sec-service': isMobile ? 0.38 : 0.46,
+  'sec-vision':  isMobile ? 0.51 : 0.57,
+  'sec-flow':    isMobile ? 0.63 : 0.68,
+  'sec-contact': isMobile ? 0.94 : 0.84,
 };
 
 function scrollToSp(sp) {
@@ -1268,27 +1315,29 @@ function getScrollProgress() {
 }
 
 // Section timing: [fadeIn, fullIn, fullOut, fadeOut]
-// Desktop timing (gaps between About/WHY US, WHY US/Service)
+// Desktop timing
 let SEC_TIMING = [
   [0.00, 0.00, 0.07, 0.10],  // 0 Hero
   [0.09, 0.12, 0.19, 0.22],  // 1 About
-  [0.26, 0.29, 0.36, 0.39],  // 2 WHY US (gap: 0.22→0.26)
-  [0.43, 0.46, 0.52, 0.55],  // 3 Service (gap: 0.39→0.43)
-  [0.53, 0.57, 0.63, 0.67],  // 4 Vision (cross-fade)
+  [0.26, 0.29, 0.36, 0.39],  // 2 WHY US
+  [0.43, 0.46, 0.52, 0.55],  // 3 Service
+  [0.53, 0.57, 0.63, 0.67],  // 4 Vision
   [0.65, 0.68, 0.82, 0.86],  // 5 Flow
-  [0.80, 0.84, 9.99, 9.99],  // 6 Contact (stays)
+  [0.84, 0.85, 0.85, 0.86],  // 6 CTA (hidden on desktop, dummy timing)
+  [0.80, 0.84, 9.99, 9.99],  // 7 Contact
 ];
 
-// Mobile timing: クロスフェード（ギャップなし、Flow→Contact重複なし）
+// Mobile timing: CTA(text) → Contact(form) as separate sections
 if (window.innerWidth <= 768) {
   SEC_TIMING = [
     [0.00, 0.00, 0.07, 0.10],  // 0 Hero
     [0.09, 0.12, 0.20, 0.23],  // 1 About
-    [0.22, 0.25, 0.33, 0.36],  // 2 WHY US (ギャップなし)
-    [0.35, 0.38, 0.46, 0.49],  // 3 Service (ギャップなし)
-    [0.48, 0.51, 0.58, 0.61],  // 4 Vision (クロスフェード)
-    [0.60, 0.63, 0.78, 0.82],  // 5 Flow (Contact重複なし)
-    [0.82, 0.85, 9.99, 9.99],  // 6 Contact (Flowが消えてから登場)
+    [0.22, 0.25, 0.33, 0.36],  // 2 WHY US
+    [0.35, 0.38, 0.46, 0.49],  // 3 Service
+    [0.48, 0.51, 0.58, 0.61],  // 4 Vision
+    [0.60, 0.63, 0.78, 0.82],  // 5 Flow
+    [0.82, 0.85, 9.99, 9.99],  // 6 CTA text section (stays)
+    [0.91, 0.94, 9.99, 9.99],  // 7 Contact form (appears after CTA)
   ];
 }
 
@@ -1302,13 +1351,14 @@ function secAlpha(t, sp) {
 }
 
 const secEls = [
-  document.getElementById('sec-hero'),
-  document.getElementById('sec-about'),
-  document.getElementById('sec-whyus'),
-  document.getElementById('sec-service'),
-  document.getElementById('sec-vision'),
-  document.getElementById('sec-flow'),
-  document.getElementById('sec-contact'),
+  document.getElementById('sec-hero'),    // 0
+  document.getElementById('sec-about'),   // 1
+  document.getElementById('sec-whyus'),   // 2
+  document.getElementById('sec-service'), // 3
+  document.getElementById('sec-vision'),  // 4
+  document.getElementById('sec-flow'),    // 5
+  document.getElementById('sec-cta'),     // 6 (text/info – mobile only)
+  document.getElementById('sec-contact'), // 7 (form)
   // Footer is a real element (not managed here)
 ];
 const dotEls  = document.querySelectorAll('.sec-dot');

@@ -427,6 +427,102 @@
       height: 100%; width: 0%; background: #82c322;
       transition: width .3s ease;
     }
+
+    /* ── Hamburger ── */
+    .hamburger {
+      display:none; flex-direction:column; justify-content:center;
+      gap:5px; background:none; border:none; cursor:pointer;
+      padding:6px; z-index:101; margin-top:14px;
+    }
+    .hamburger span {
+      display:block; width:22px; height:1.5px;
+      background:rgba(255,255,255,.75);
+      transition:transform .3s ease, opacity .3s ease;
+    }
+    .nav-open .hamburger span:nth-child(1) { transform:rotate(45deg) translate(4.7px,4.7px); }
+    .nav-open .hamburger span:nth-child(2) { opacity:0; }
+    .nav-open .hamburger span:nth-child(3) { transform:rotate(-45deg) translate(4.7px,-4.7px); }
+
+    /* ── Mobile nav overlay ── */
+    .mobile-nav {
+      display:none; position:fixed; inset:0;
+      background:rgba(4,9,4,0.97);
+      z-index:98; flex-direction:column;
+      align-items:center; justify-content:center; gap:36px;
+    }
+    .mobile-nav.open { display:flex; }
+    .mobile-nav a {
+      font-family:'Inter',sans-serif; font-size:13px; font-weight:500;
+      letter-spacing:.22em; color:rgba(255,255,255,.65);
+      text-transform:uppercase; text-decoration:none;
+      transition:color .2s;
+    }
+    .mobile-nav a:hover, .mobile-nav a:active { color:#82c322; }
+    .mobile-nav .nav-contact-m {
+      margin-top:16px; border:1px solid rgba(130,195,34,.5);
+      padding:12px 36px; color:rgba(130,195,34,.9)!important;
+    }
+
+    /* ── Mobile media queries ── */
+    @media (max-width:768px) {
+      header { padding:14px 20px; }
+      nav { display:none; }
+      .hamburger { display:flex; }
+
+      .hero-content { left:24px; right:24px; max-width:100%; }
+      .hero-tagline { font-size:clamp(2.6rem,13vw,5rem); margin-bottom:24px; }
+      .hero-sub { font-size:8px; letter-spacing:.18em; margin-bottom:28px; }
+      .hero-cta { padding:14px 32px; font-size:9.5px; }
+
+      .about-inner { padding:0 24px; max-width:100%; }
+      #sec-about { background:linear-gradient(to bottom, rgba(4,9,4,0.88) 70%, rgba(4,9,4,0.55) 100%); }
+      #sec-about h2 { font-size:clamp(2.2rem,10vw,4rem); }
+
+      .whyus-inner { padding:0 20px; }
+      .whyus-header h2 { font-size:clamp(2rem,9vw,3.5rem); }
+      .why-grid { grid-template-columns:repeat(2,1fr); gap:0; }
+      .why-card { padding:20px 16px 20px 0; }
+      .why-card p { font-size:11px; }
+
+      .service-inner { padding:0 20px; }
+      .service-header h2 { font-size:clamp(1.8rem,8vw,3rem); }
+      .service-item { grid:auto / 36px 1fr; gap:0 12px; padding:16px 0; }
+      .svc-num { font-size:1.4rem; }
+      .svc-name { font-size:14px; }
+      .svc-desc { font-size:11px; grid-column:2; }
+      .svc-link { font-size:9px; grid-column:2; }
+
+      .vision-inner { padding:0 24px; max-width:100%; text-align:left; }
+      #sec-vision { background:rgba(4,9,4,0.82); align-items:flex-start; }
+      .vision-inner h2 { font-size:clamp(3rem,16vw,7rem); }
+      .vision-inner p { font-size:11.5px; }
+      .vision-inner .btn-link { justify-content:flex-start; }
+
+      .flow-inner { padding:0 20px; }
+      .flow-header h2 { font-size:clamp(1.8rem,8vw,3rem); }
+      .flow-steps { grid-template-columns:repeat(2,1fr); gap:28px 20px; }
+      .flow-step h3 { font-size:13px; }
+      .flow-step p { font-size:11px; }
+      .flow-steps::before { display:none; }
+
+      #sec-contact { grid-template-columns:1fr; overflow-y:auto; }
+      .contact-left {
+        padding:48px 24px 28px;
+        border-right:none;
+        border-bottom:1px solid rgba(255,255,255,.07);
+      }
+      .contact-left h2 { font-size:clamp(2rem,9vw,3.5rem); }
+      .contact-right { padding:24px 24px 48px; }
+      .form-row-2 { grid-template-columns:1fr; gap:0; }
+
+      .ft-main { grid-template-columns:1fr; gap:28px; padding:40px 24px 24px; }
+      .ft-logo-wrap { flex-direction:row; gap:10px; align-items:center; justify-content:flex-start; }
+      .ft-social { justify-content:flex-start; }
+      .ft-copy { padding:14px 24px; display:flex; flex-direction:column; gap:4px; text-align:left; }
+
+      #sec-dots { display:none; }
+      #scroll-zone { height:1200vh; }
+    }
   </style>
 </head>
 <body>
@@ -491,6 +587,9 @@
     <a href="#sec-flow">Flow</a>
     <a href="#sec-contact" class="nav-contact">Contact</a>
   </nav>
+  <button class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
 <!-- Progress dots -->
@@ -506,6 +605,14 @@
 </div>
 
 <!-- Scroll indicator -->
+
+<div class="mobile-nav">
+  <a href="#sec-about">About</a>
+  <a href="#sec-whyus">Why Us</a>
+  <a href="#sec-service">Service</a>
+  <a href="#sec-flow">Flow</a>
+  <a class="nav-contact-m" href="#sec-contact">Contact</a>
+</div>
 
 <!-- One scroll zone driving everything -->
 <div id="scroll-zone"></div>
@@ -961,6 +1068,22 @@ function initCharSplit() {
   });
 }
 initCharSplit();
+
+/* ── Mobile nav toggle ── */
+const hamburgerBtn = document.querySelector('.hamburger');
+const mobileNav = document.querySelector('.mobile-nav');
+if (hamburgerBtn && mobileNav) {
+  hamburgerBtn.addEventListener('click', () => {
+    document.body.classList.toggle('nav-open');
+    mobileNav.classList.toggle('open');
+  });
+  mobileNav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.body.classList.remove('nav-open');
+      mobileNav.classList.remove('open');
+    });
+  });
+}
 
 /* ── Nav scroll: #sec-* anchor → scroll zone position ── */
 const NAV_SP = {

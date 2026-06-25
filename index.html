@@ -522,25 +522,38 @@
       .hero-sub { font-size:7.5px; letter-spacing:.14em; margin-bottom:24px; }
       .hero-cta { padding:12px 28px; font-size:9px; }
 
+      /* ── ヘッダー被り防止: セクション上部余白 ── */
+      .about-inner, .whyus-inner, .service-inner,
+      .vision-inner, .flow-inner { padding-top:72px !important; }
+
       /* ── About ── */
-      .about-inner { padding:0 20px; max-width:100%; }
+      .about-inner { padding-left:20px !important; padding-right:20px !important; max-width:100%; }
       #sec-about { background:rgba(4,9,4,0.88) !important; }
       #sec-about h2 { font-size:clamp(2rem,9vw,3.5rem); }
       #sec-about .btn-link { display:none; }
 
       /* ── WHY US ── */
-      .whyus-inner { padding:0 20px; }
+      .whyus-inner { padding-left:20px !important; padding-right:20px !important; }
       .whyus-header h2 { font-size:clamp(1.8rem,8vw,3.2rem); }
       .why-grid { grid-template-columns:1fr !important; gap:0; }
       .why-card { padding:18px 0; }
       .why-card p { font-size:11.5px; line-height:1.9; }
 
       /* ── Service ── */
-      .service-inner { padding:0 20px; }
+      .service-inner { padding:0 20px !important; }
       .service-header h2 { font-size:clamp(1.6rem,7vw,2.8rem); }
-      .service-item { padding:18px 0; }
-      .svc-name { font-size:15px; }
-      .svc-desc { font-size:12px; line-height:1.9; }
+      /* 4列グリッドをフレックス縦積みに完全置換 */
+      .service-item {
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:flex-start !important;
+        gap:6px !important;
+        padding:18px 0 !important;
+      }
+      .svc-num { font-size:1.6rem !important; line-height:1 !important; }
+      .svc-name { font-size:15px !important; white-space:normal !important; }
+      .svc-desc { font-size:12px !important; line-height:1.9 !important; color:rgba(255,255,255,.65) !important; }
+      .svc-link { white-space:normal !important; margin-top:2px !important; }
 
       /* ── Vision ── */
       .vision-inner { padding:0 20px; max-width:100%; text-align:left; }

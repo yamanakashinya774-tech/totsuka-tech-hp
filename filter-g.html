@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOTSUKA TECH — セキュリティ × 開発で、事業を守り育てる</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body { background: #060E06; overflow-x: hidden; color: #fff; }
+    a { text-decoration: none; }
+
+    /* ── Plexus local mask ── */
+    #plexus-mask {
+      position: fixed;
+      left: 32%; top: 52%;
+      width: 28%; height: 40%;
+      z-index: 2; pointer-events: none;
+      backdrop-filter: hue-rotate(28deg) saturate(0.22) brightness(0.80);
+      -webkit-backdrop-filter: hue-rotate(28deg) saturate(0.22) brightness(0.80);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+      mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+    }
+
+    /* ── Three canvases ── */
+    #video-bg {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+      filter: blur(3px) brightness(0.80);
+    }
+    #video-scroll {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1; pointer-events: none;
+      opacity: 0;
+      filter: brightness(0.92) saturate(0.88);
+    }
+    #c {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 20; pointer-events: none;
+    }
+
+    /* ── Header ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100; padding: 18px 40px;
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .logo-svg { width: 44px; height: auto; filter: drop-shadow(0 0 4px rgba(130,195,34,0.3)); animation: float-breath 2s ease-in-out infinite; }
+    @keyframes float-breath {
+      0%, 100% { transform: translateY(0)    scale(1.00); }
+      50%       { transform: translateY(-7px) scale(1.03); }
+    }
+    .logo-name { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.18em; color:#fff; text-transform:uppercase; line-height:1; }
+    .logo-sub  { font-family:'Inter',sans-serif; font-size:8.5px; font-weight:400; letter-spacing:.32em; color:rgba(255,255,255,.38); text-transform:uppercase; line-height:1; }
+    nav { display:flex; align-items:center; gap:26px; padding-top:16px; }
+    nav a { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:500; letter-spacing:.14em; color:rgba(255,255,255,.52); text-transform:uppercase; transition:color .2s; }
+    nav a:hover { color:#fff; }
+    .nav-contact { border:1px solid rgba(255,255,255,.38)!important; padding:6px 16px; border-radius:2px; color:rgba(255,255,255,.80)!important; }
+    .nav-contact:hover { border-color:#82c322!important; color:#82c322!important; }
+
+    /* ── Hero UI ── */
+    #hero-ui {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 5; pointer-events: none;
+    }
+    .hero-content {
+      position: absolute; top: 50%; left: 64px;
+      transform: translateY(-50%);
+      max-width: 820px;
+    }
+    .hero-eyebrow {
+      font-family:'Inter',sans-serif; font-size:9px;
+      letter-spacing:.45em; color:rgba(130,195,34,.80);
+      text-transform:uppercase; margin-bottom:24px;
+      overflow:hidden;
+    }
+    .hero-eyebrow-inner {
+      display:block; transform:translateY(110%);
+      transition: transform 1.1s cubic-bezier(0.16,1,0.3,1) 1.4s;
+    }
+    .hero-tagline {
+      font-family:'Noto Sans JP',sans-serif;
+      font-size: clamp(3.4rem, 7.5vw, 10rem);
+      font-weight:700; color:#fff; line-height:1.08;
+      letter-spacing:-.02em; margin-bottom:36px;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.4);
+    }
+    .hero-tagline .rl { display:block; overflow:hidden; }
+    .hero-sub {
+      font-family:'Inter',sans-serif; font-size:9.5px;
+      letter-spacing:.30em; color:rgba(118,196,30,.85);
+      text-transform:uppercase; line-height:2.1;
+      overflow:hidden; margin-bottom:40px;
+    }
+    .hero-sub-inner {
+      display:block; transform:translateY(110%);
+      transition: transform 1s cubic-bezier(0.16,1,0.3,1) 2.0s;
+    }
+    .hero-cta {
+      display:inline-flex; align-items:center; gap:16px;
+      padding:18px 44px; position:relative;
+      border:none;
+      color:#82c322; font-family:'Inter',sans-serif;
+      font-size:10.5px; font-weight:600; letter-spacing:.22em;
+      text-transform:uppercase; text-decoration:none;
+      pointer-events:auto;
+      opacity:0; transform:translateY(12px);
+      transition: opacity .9s ease 2.4s, transform .9s ease 2.4s, color .3s;
+    }
+    /* コーナーブラケット */
+    .hero-cta::before, .hero-cta::after {
+      content:''; position:absolute;
+      width:14px; height:14px;
+      transition: width .3s ease, height .3s ease, opacity .3s;
+    }
+    .hero-cta::before {
+      top:0; left:0;
+      border-top:1.5px solid rgba(130,195,34,.75);
+      border-left:1.5px solid rgba(130,195,34,.75);
+    }
+    .hero-cta::after {
+      bottom:0; right:0;
+      border-bottom:1.5px solid rgba(130,195,34,.75);
+      border-right:1.5px solid rgba(130,195,34,.75);
+    }
+    .hero-cta:hover::before, .hero-cta:hover::after { width:100%; height:100%; }
+    .hero-cta:hover { color:#a8e04a; }
+    .hero-cta-arr { transition:transform .35s cubic-bezier(0.16,1,0.3,1); display:inline-block; }
+    .hero-cta:hover .hero-cta-arr { transform:translateX(7px); }
+    .hero-ready .hero-eyebrow-inner,
+    .hero-ready .hero-sub-inner { transform:translateY(0); }
+    .hero-ready .hero-cta { opacity:1; transform:translateY(0); }
+
+    /* ── Character split reveal (3D depth) ── */
+    .rv-line { display:block; overflow:hidden; }
+    .hero-tagline .rl { perspective: 800px; }
+    .sec-overlay h2   { perspective: 700px; }
+    .cw { display:inline-block; overflow:hidden; vertical-align:bottom; }
+    .ch {
+      display:inline-block;
+      transform: translateY(105%) rotateX(-28deg);
+      transform-origin: center bottom;
+      transition: transform 0.72s cubic-bezier(0.16,1,0.3,1) var(--d, 0s);
+    }
+    .sec-overlay.active .ch { transform: translateY(0) rotateX(0deg); }
+    .hero-ready .ch          { transform: translateY(0) rotateX(0deg); }
+
+    /* Body / fade elements */
+    .rv-fade {
+      opacity:0; transform:translateY(14px);
+      transition: opacity 0.8s ease var(--d,0s),
+                  transform 0.8s cubic-bezier(0.16,1,0.3,1) var(--d,0s);
+    }
+    .sec-overlay.active .rv-fade { opacity:1; transform:translateY(0); }
+
+    /* Section label: 常時表示、letter-spacingのみアニメ */
+    .section-label {
+      opacity:1; letter-spacing:.50em;
+      transition: letter-spacing 0.9s cubic-bezier(0.16,1,0.3,1) 0.05s;
+    }
+    .sec-overlay.active .section-label { letter-spacing:.38em; }
+
+    /* scroll indicator */
+    .scroll-ind {
+      position: fixed; left: 18px; bottom: 40px;
+      z-index: 6; pointer-events: none;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      animation: heroFadeIn 1s ease-out 2.4s both;
+    }
+    .scroll-ind span {
+      font-family:'Inter',sans-serif; font-size:8px; letter-spacing:.3em;
+      color:rgba(255,255,255,.30); text-transform:uppercase;
+      writing-mode:vertical-rl; transform:rotate(180deg);
+    }
+    .scroll-line {
+      width:1px; height:38px;
+      background:linear-gradient(to bottom,rgba(255,255,255,.28),transparent);
+    }
+
+    /* ── Scroll zone: 1800vh ── */
+    #scroll-zone { height: 1800vh; }
+
+    /* RTL scroll transition layer */
+    #video-rtl {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 15; pointer-events: none;
+      opacity: 0;
+      filter: blur(8px) brightness(0.75) saturate(0.7);
+    }
+
+    /* ── Section overlays: all fixed full-screen ── */
+    .sec-overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 10; opacity: 0; pointer-events: none;
+      display: flex; flex-direction: column;
+    }
+    .sec-overlay.active { pointer-events: auto; }
+
+    /* shared */
+    .section-label { font-family:'Inter',sans-serif; font-size:9.5px; letter-spacing:.38em; color:rgba(130,195,34,.75); text-transform:uppercase; }
+    .btn-link { display:inline-flex; align-items:center; gap:10px; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.22em; color:rgba(255,255,255,.48); text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,.14); padding-bottom:3px; transition:color .2s,border-color .2s; }
+    .btn-link:hover { color:#82c322; border-color:#82c322; }
+    .arr { transition:transform .2s; display:inline-block; }
+    .btn-link:hover .arr { transform:translateX(4px); }
+
+    /* About */
+    #sec-about { background: linear-gradient(to right, rgba(4,9,4,0.92) 48%, rgba(4,9,4,0.0) 100%); }
+    .about-inner { padding: 0 64px; display:flex; flex-direction:column; justify-content:center; height:100%; max-width:560px; }
+    .about-inner .section-label { margin-bottom:28px; }
+    .about-inner h2 { font-family:'Noto Sans JP',sans-serif; font-size:clamp(2.4rem,4.5vw,6rem); font-weight:700; color:#fff; line-height:1.15; margin-bottom:24px; letter-spacing:-.02em; }
+    .about-inner p { font-family:'Noto Sans JP',sans-serif; font-size:13px; color:rgba(255,255,255,.50); line-height:2.1; margin-bottom:36px; }
+
+    /* WHY US */
+    #sec-whyus {
+      background: linear-gradient(
+        to right,
+        rgba(4,9,4,0.94) 55%,
+        rgba(4,9,4,0.80) 75%,
+        rgba(4,9,4,0.55) 90%,
+        rgba(4,9,4,0.30) 100%
+      );
+    }
+    .whyus-inner { padding: 0 64px; display:flex; flex-direction:column; justify-content:center; height:100%; gap:48px; }
+    .whyus-header .section-label { margin-bottom:16px; display:block; }
+    .whyus-header h2 { font-family:'Noto Sans JP',sans-serif; font-size:clamp(1.8rem,3.2vw,4rem); font-weight:700; color:#fff; line-height:1.2; letter-spacing:-.02em; }
+    .why-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0; max-width:1100px; }
+    .why-card { padding:26px 36px 0 0; border-top:1px solid rgba(255,255,255,.14); transition:border-top-color .4s; }
+    .why-card:last-child { padding-right:0; }
+    .why-card:hover { border-top-color:rgba(130,195,34,.55); }
+    .why-accent { width:18px; height:1.5px; background:#82c322; margin-bottom:18px; opacity:.80; }
+    .why-num { font-family:'Bebas Neue',sans-serif; font-size:4rem; color:rgba(130,195,34,.55); line-height:1; margin-bottom:14px; display:block; letter-spacing:.04em; }
+    .why-card h3 { font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:10px; }
+    .why-card p { font-family:'Noto Sans JP',sans-serif; font-size:11.5px; color:rgba(255,255,255,.60); line-height:2.0; }
+
+    /* Service */
+    #sec-service { background: rgba(4,9,4,0.93); justify-content:center; }
+    .service-inner { padding:0 64px; width:100%; }
+    .service-header { margin-bottom:40px; }
+    .service-header .section-label { display:block; margin-bottom:14px; }
+    .service-header h2 { font-family:'Noto Sans JP',sans-serif; font-size:clamp(1.6rem,2.8vw,3.2rem); font-weight:700; color:#fff; letter-spacing:-.02em; }
+    .service-list { width:100%; border-top:1px solid rgba(255,255,255,.14); }
+    .service-item {
+      display:grid; grid-template-columns:52px minmax(180px,220px) 1fr auto;
+      align-items:center; gap:0 44px; padding:30px 0;
+      border-bottom:1px solid rgba(255,255,255,.14);
+      transition:border-bottom-color .3s,background .3s; cursor:pointer;
+    }
+    .service-item:hover { border-bottom-color:rgba(130,195,34,.40); }
+    .service-item:hover .svc-name { color:#82c322; }
+    .service-item:hover .svc-link { color:#82c322; transform:translateX(5px); }
+    .svc-num { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:rgba(130,195,34,.30); line-height:1; }
+    .svc-name { font-family:'Noto Sans JP',sans-serif; font-size:16px; font-weight:700; color:#fff; transition:color .3s; }
+    .svc-desc { font-family:'Noto Sans JP',sans-serif; font-size:12px; color:rgba(255,255,255,.58); line-height:1.9; }
+    .svc-link { font-family:'Inter',sans-serif; font-size:9px; letter-spacing:.22em; color:rgba(255,255,255,.30); text-transform:uppercase; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; transition:color .3s,transform .3s; }
+
+    /* Vision */
+    #sec-vision { background: linear-gradient(to left, rgba(4,9,4,0.90) 48%, rgba(4,9,4,0.0) 100%); align-items:flex-end; }
+    .vision-inner { padding:0 64px; display:flex; flex-direction:column; justify-content:center; height:100%; max-width:520px; text-align:right; }
+    .vision-inner .section-label { margin-bottom:20px; }
+    .vision-inner h2 { font-family:'Bebas Neue','Inter',sans-serif; font-size:clamp(4rem,9vw,13rem); font-weight:400; color:#fff; line-height:.95; letter-spacing:.04em; text-transform:uppercase; margin-bottom:24px; }
+    .vision-inner p { font-family:'Noto Sans JP',sans-serif; font-size:13px; color:rgba(255,255,255,.50); line-height:2.1; margin-bottom:36px; }
+    .vision-inner .btn-link { justify-content:flex-end; }
+
+    /* Flow */
+    #sec-flow { background: rgba(4,9,4,0.72); justify-content:center; }
+    .flow-inner { padding:0 64px; width:100%; }
+    .flow-header { margin-bottom:52px; }
+    .flow-header .section-label { margin-bottom:16px; display:block; text-shadow:0 1px 20px rgba(0,0,0,0.6); }
+    .flow-header h2 { font-family:'Noto Sans JP',sans-serif; font-size:clamp(1.6rem,3vw,4rem); font-weight:700; color:#fff; letter-spacing:-.02em; text-shadow:0 2px 40px rgba(0,0,0,0.7); }
+    .flow-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative; }
+    .flow-steps::before { content:''; position:absolute; top:19px; left:12px; right:25%; height:1px; background:linear-gradient(to right,rgba(130,195,34,.35),rgba(130,195,34,.06)); }
+    .flow-step { padding-right:32px; }
+    .flow-step:last-child { padding-right:0; }
+    .flow-step-dot { width:8px; height:8px; border-radius:50%; background:#82c322; margin-bottom:16px; box-shadow:0 0 10px rgba(130,195,34,.6); }
+    .flow-step-num { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:rgba(130,195,34,.65); line-height:1; margin-bottom:12px; display:block; text-shadow:0 0 20px rgba(0,0,0,1),0 0 40px rgba(0,0,0,0.9); }
+    .flow-step h3 { font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:10px; text-shadow:0 1px 18px rgba(0,0,0,1),0 2px 30px rgba(0,0,0,0.9); }
+    .flow-step p { font-family:'Noto Sans JP',sans-serif; font-size:11.5px; color:rgba(255,255,255,.80); line-height:2.0; text-shadow:0 1px 14px rgba(0,0,0,1),0 2px 24px rgba(0,0,0,0.9); }
+
+    /* Contact — 2-column split */
+    #sec-contact {
+      background: linear-gradient(
+        to bottom,
+        rgba(4,9,4,0.20) 0%,
+        rgba(4,9,4,0.72) 18%,
+        rgba(4,9,4,0.80) 50%,
+        rgba(4,9,4,0.72) 82%,
+        rgba(4,9,4,0.20) 100%
+      );
+      z-index:16;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .contact-left {
+      padding: 72px 64px; display:flex; flex-direction:column;
+      justify-content:center; border-right:1px solid rgba(255,255,255,.06);
+      position:relative; overflow:hidden;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .contact-ghost {
+      font-family:'Bebas Neue',sans-serif;
+      font-size: clamp(7rem, 16vw, 20rem);
+      color: rgba(130,195,34,.032); line-height:.85; letter-spacing:.06em;
+      position:absolute; bottom:-0.08em; left:60px;
+      white-space:nowrap; pointer-events:none; user-select:none;
+    }
+    .contact-left .section-label { margin-bottom:22px; display:block; }
+    .contact-left h2 {
+      font-family:'Noto Sans JP',sans-serif;
+      font-size: clamp(2.4rem, 4.5vw, 5.5rem);
+      font-weight:700; color:#fff; line-height:1.12;
+      letter-spacing:-.02em; margin-bottom:28px;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.8);
+    }
+    .contact-left-desc {
+      font-family:'Noto Sans JP',sans-serif; font-size:12px;
+      color:rgba(255,255,255,.36); line-height:2.1; margin-bottom:48px;
+    }
+    .contact-left-rule { width:20px; height:1.5px; background:rgba(130,195,34,.65); margin-bottom:28px; }
+    .contact-left-info { display:flex; flex-direction:column; gap:14px; }
+    .contact-info-item { display:flex; align-items:baseline; gap:16px; }
+    .contact-info-label {
+      font-family:'Inter',sans-serif; font-size:7.5px;
+      letter-spacing:.30em; color:rgba(130,195,34,.60);
+      text-transform:uppercase; min-width:54px;
+    }
+    .contact-info-val {
+      font-family:'Inter',sans-serif; font-size:11.5px;
+      color:rgba(255,255,255,.48); letter-spacing:.03em;
+    }
+
+    /* Right: form */
+    .contact-right {
+      padding: 72px 64px; display:flex;
+      flex-direction:column; justify-content:center;
+      background: rgba(4,9,4,0.55);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    }
+    .form-field { margin-bottom:24px; }
+    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px; }
+    .form-label {
+      font-family:'Inter',sans-serif; font-size:8px; letter-spacing:.25em;
+      color:rgba(255,255,255,.55); text-transform:uppercase; display:block; margin-bottom:9px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width:100%; background:transparent;
+      border:none; border-bottom:1px solid rgba(255,255,255,.28);
+      color:#fff; font-family:'Noto Sans JP',sans-serif; font-size:13px;
+      padding:9px 0; outline:none;
+      transition:border-bottom-color .25s;
+      border-radius:0; -webkit-appearance:none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-bottom-color:rgba(130,195,34,.70);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color:rgba(255,255,255,.32); }
+    .form-select {
+      cursor:pointer;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7' fill='none'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='rgba(255,255,255,0.22)' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 0 center; background-color:transparent;
+      padding-right:22px;
+    }
+    .form-select option { background:#0d1a0d; color:#fff; }
+    .form-textarea { resize:none; min-height:80px; }
+    .form-footer { display:flex; align-items:center; justify-content:space-between; margin-top:32px; }
+    .form-note { font-family:'Inter',sans-serif; font-size:8.5px; letter-spacing:.10em; color:rgba(255,255,255,.18); }
+    .form-submit {
+      padding:13px 38px; background:transparent;
+      border:1px solid rgba(130,195,34,.55); color:#82c322;
+      font-family:'Inter',sans-serif; font-size:10px; font-weight:600;
+      letter-spacing:.22em; text-transform:uppercase; cursor:pointer;
+      transition:background .25s,border-color .25s,color .25s;
+      display:inline-flex; align-items:center; gap:10px;
+    }
+    .form-submit:hover { background:rgba(130,195,34,.09); border-color:#82c322; }
+    .form-submit:disabled { opacity:.35; cursor:not-allowed; }
+    .form-thanks {
+      font-family:'Noto Sans JP',sans-serif; font-size:14px;
+      color:rgba(255,255,255,.65); line-height:2.2; padding:48px 0;
+    }
+
+    /* Footer */
+    #sec-footer {
+      position: relative !important;
+      background: #040904;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      min-height: auto;
+      opacity: 1 !important;
+    }
+    .ft-main { padding:52px 60px 32px; display:grid; grid-template-columns:150px 1fr 1fr 1fr auto; gap:36px; align-items:start; border-top:1px solid rgba(255,255,255,.07); }
+    .ft-logo-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .ft-logo-svg { width:38px; height:auto; }
+    .ft-logo-name { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:.18em; color:rgba(255,255,255,.40); text-transform:uppercase; }
+    .ft-logo-sub  { font-family:'Inter',sans-serif; font-size:8px; letter-spacing:.30em; color:rgba(255,255,255,.22); text-transform:uppercase; }
+    .ft-nav { display:flex; flex-direction:column; gap:13px; }
+    .ft-nav a { font-family:'Inter',sans-serif; font-size:10.5px; letter-spacing:.12em; color:rgba(255,255,255,.34); text-transform:uppercase; transition:color .2s; }
+    .ft-nav a:hover { color:rgba(255,255,255,.58); }
+    .ft-social { display:flex; gap:10px; align-items:center; padding-top:2px; }
+    .ft-social a { width:34px; height:34px; border:1px solid rgba(255,255,255,.10); border-radius:50%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.32); transition:all .2s; }
+    .ft-social a:hover { border-color:#82c322; color:#82c322; }
+    .ft-copy { border-top:1px solid rgba(255,255,255,.07); padding:14px 60px; text-align:right; }
+    .ft-copy p { font-family:'Inter',sans-serif; font-size:9.5px; color:rgba(255,255,255,.16); letter-spacing:.06em; }
+
+    /* section progress dots */
+    #sec-dots {
+      position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+      z-index: 50; display:flex; flex-direction:column; gap:10px; pointer-events:none;
+    }
+    .sec-dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.22); transition:background .4s,transform .4s; }
+    .sec-dot.on { background:#82c322; transform:scale(1.5); }
+
+    /* loading bar */
+    #loading-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px;
+      z-index: 999; background: rgba(130,195,34,0.2);
+      transition: opacity .5s;
+    }
+    #loading-bar-inner {
+      height: 100%; width: 0%; background: #82c322;
+      transition: width .3s ease;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Plexus local color mask -->
+<div id="plexus-mask"></div>
+
+<!-- Loading bar -->
+<div id="loading-bar"><div id="loading-bar-inner"></div></div>
+
+<!-- Layer 1: Firefly loop video -->
+<canvas id="video-bg"></canvas>
+
+<!-- Layer 2: scroll-driven frames -->
+<canvas id="video-scroll"></canvas>
+
+<!-- Layer 3: particles / effects -->
+<canvas id="c"></canvas>
+
+<!-- Layer 4: right-to-left scroll transition -->
+<canvas id="video-rtl"></canvas>
+
+<!-- Header -->
+<header>
+  <a class="logo-wrap" href="#">
+    <svg class="logo-svg" viewBox="0 0 513 415" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12.65"  cy="35.79"  r="12.65" fill="#7dbd1f"/>
+      <circle cx="48.45"  cy="70.15"  r="7.66"  fill="#1ca93d"/>
+      <circle cx="60.80"  cy="33.73"  r="20.01" fill="#71b825"/>
+      <circle cx="94.87"  cy="68.72"  r="12.57" fill="#069c47"/>
+      <circle cx="127.35" cy="28.32"  r="23.84" fill="#69b32c"/>
+      <circle cx="176.11" cy="71.39"  r="11.48" fill="#76c026"/>
+      <circle cx="203.11" cy="21.48"  r="21.48" fill="#05925b"/>
+      <circle cx="242.91" cy="68.72"  r="24.58" fill="#6cb82b"/>
+      <circle cx="294.19" cy="23.32"  r="23.32" fill="#80c023"/>
+      <circle cx="333.22" cy="69.81"  r="18.73" fill="#089d46"/>
+      <circle cx="379.46" cy="25.54"  r="25.54" fill="#079c45"/>
+      <circle cx="418.63" cy="67.65"  r="13.62" fill="#67b92a"/>
+      <circle cx="447.88" cy="29.19"  r="18.24" fill="#7ac124"/>
+      <circle cx="462.96" cy="69.81"  r="7.63"  fill="#099a45"/>
+      <circle cx="500.00" cy="36.24"  r="12.92" fill="#82c322"/>
+      <circle cx="285.36" cy="110.98" r="14.49" fill="#7fc120"/>
+      <circle cx="214.45" cy="133.12" r="24.67" fill="#089a43"/>
+      <circle cx="273.00" cy="163.59" r="21.18" fill="#69b628"/>
+      <circle cx="284.83" cy="207.00" r="9.49"  fill="#059146"/>
+      <circle cx="221.70" cy="208.18" r="20.34" fill="#7dbf22"/>
+      <circle cx="265.43" cy="244.95" r="15.73" fill="#04905a"/>
+      <circle cx="221.70" cy="267.23" r="12.49" fill="#79be23"/>
+      <circle cx="271.53" cy="296.45" r="19.72" fill="#77bc24"/>
+      <circle cx="221.70" cy="334.26" r="20.34" fill="#6db828"/>
+      <circle cx="270.08" cy="358.05" r="12.37" fill="#6bcb3d"/>
+      <circle cx="234.04" cy="386.99" r="8.42"  fill="#64bf2e"/>
+      <circle cx="273.64" cy="401.28" r="14.29" fill="#069e44"/>
+    </svg>
+    <span class="logo-name">TOTSUKA</span>
+    <span class="logo-sub">TECH</span>
+  </a>
+  <nav>
+    <a href="#sec-about">About</a>
+    <a href="#sec-whyus">Why Us</a>
+    <a href="#sec-service">Service</a>
+    <a href="#sec-flow">Flow</a>
+    <a href="#sec-contact" class="nav-contact">Contact</a>
+  </nav>
+</header>
+
+<!-- Progress dots -->
+<div id="sec-dots">
+  <div class="sec-dot" data-sec="0"></div>
+  <div class="sec-dot" data-sec="1"></div>
+  <div class="sec-dot" data-sec="2"></div>
+  <div class="sec-dot" data-sec="3"></div>
+  <div class="sec-dot" data-sec="4"></div>
+  <div class="sec-dot" data-sec="5"></div>
+  <div class="sec-dot" data-sec="6"></div>
+  <div class="sec-dot" data-sec="7"></div>
+</div>
+
+<!-- Scroll indicator -->
+
+<!-- One scroll zone driving everything -->
+<div id="scroll-zone"></div>
+
+<!-- 7: Footer (real element, not fixed overlay) -->
+<div id="sec-footer">
+  <div class="ft-main">
+    <div class="ft-logo-wrap">
+      <svg class="ft-logo-svg" viewBox="0 0 513 415" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12.65"  cy="35.79"  r="12.65" fill="#7dbd1f" opacity=".4"/>
+        <circle cx="48.45"  cy="70.15"  r="7.66"  fill="#1ca93d" opacity=".4"/>
+        <circle cx="60.80"  cy="33.73"  r="20.01" fill="#71b825" opacity=".4"/>
+        <circle cx="94.87"  cy="68.72"  r="12.57" fill="#069c47" opacity=".4"/>
+        <circle cx="127.35" cy="28.32"  r="23.84" fill="#69b32c" opacity=".4"/>
+        <circle cx="176.11" cy="71.39"  r="11.48" fill="#76c026" opacity=".4"/>
+        <circle cx="203.11" cy="21.48"  r="21.48" fill="#05925b" opacity=".4"/>
+        <circle cx="242.91" cy="68.72"  r="24.58" fill="#6cb82b" opacity=".4"/>
+        <circle cx="294.19" cy="23.32"  r="23.32" fill="#80c023" opacity=".4"/>
+        <circle cx="333.22" cy="69.81"  r="18.73" fill="#089d46" opacity=".4"/>
+        <circle cx="379.46" cy="25.54"  r="25.54" fill="#079c45" opacity=".4"/>
+        <circle cx="418.63" cy="67.65"  r="13.62" fill="#67b92a" opacity=".4"/>
+        <circle cx="447.88" cy="29.19"  r="18.24" fill="#7ac124" opacity=".4"/>
+        <circle cx="462.96" cy="69.81"  r="7.63"  fill="#099a45" opacity=".4"/>
+        <circle cx="500.00" cy="36.24"  r="12.92" fill="#82c322" opacity=".4"/>
+        <circle cx="285.36" cy="110.98" r="14.49" fill="#7fc120" opacity=".4"/>
+        <circle cx="214.45" cy="133.12" r="24.67" fill="#089a43" opacity=".4"/>
+        <circle cx="273.00" cy="163.59" r="21.18" fill="#69b628" opacity=".4"/>
+        <circle cx="284.83" cy="207.00" r="9.49"  fill="#059146" opacity=".4"/>
+        <circle cx="221.70" cy="208.18" r="20.34" fill="#7dbf22" opacity=".4"/>
+        <circle cx="265.43" cy="244.95" r="15.73" fill="#04905a" opacity=".4"/>
+        <circle cx="221.70" cy="267.23" r="12.49" fill="#79be23" opacity=".4"/>
+        <circle cx="271.53" cy="296.45" r="19.72" fill="#77bc24" opacity=".4"/>
+        <circle cx="221.70" cy="334.26" r="20.34" fill="#6db828" opacity=".4"/>
+        <circle cx="270.08" cy="358.05" r="12.37" fill="#6bcb3d" opacity=".4"/>
+        <circle cx="234.04" cy="386.99" r="8.42"  fill="#64bf2e" opacity=".4"/>
+        <circle cx="273.64" cy="401.28" r="14.29" fill="#069e44" opacity=".4"/>
+      </svg>
+      <span class="ft-logo-name">TOTSUKA</span>
+      <span class="ft-logo-sub">TECH</span>
+    </div>
+    <div class="ft-nav">
+      <a href="#">About</a>
+      <a href="#">Why Us</a>
+      <a href="#">Service</a>
+    </div>
+    <div class="ft-nav">
+      <a href="#">Flow</a>
+      <a href="#">Contact</a>
+      <a href="#">Company</a>
+    </div>
+    <div class="ft-nav">
+      <a href="privacy.html">プライバシーポリシー</a>
+      <a href="terms.html">利用規約</a>
+      <a href="tokusho.html">特定商取引法に基づく表記</a>
+      <a href="#sec-contact">お問い合わせ</a>
+    </div>
+    <div class="ft-social">
+      <a href="#" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+      <a href="#" aria-label="X"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg></a>
+    </div>
+  </div>
+  <div class="ft-copy">
+    <p>© 2026 Totsuka Tech, LLC. All Rights Reserved.</p>
+    <p><a href="mailto:contact@totsuka-tech.com" style="color:rgba(255,255,255,.28);text-decoration:none;letter-spacing:.06em;">contact@totsuka-tech.com</a></p>
+  </div>
+</div>
+
+<!-- ── Section overlays ── -->
+
+<!-- 0: Hero -->
+<div id="sec-hero" class="sec-overlay">
+  <div class="hero-content">
+    <p class="hero-eyebrow"><span class="hero-eyebrow-inner">Bug Bounty Driven Security</span></p>
+    <h1 class="hero-tagline" data-split-hero>
+      <span class="rl">攻撃者視点で、</span>
+      <span class="rl">脆弱性を、</span>
+      <span class="rl">ゼロへ。</span>
+    </h1>
+    <p class="hero-sub"><span class="hero-sub-inner">Bug Bounty × AI · 最短数日で診断開始 · 完全外部診断</span></p>
+    <a href="#sec-contact" class="hero-cta">まず相談する <span class="hero-cta-arr">→</span></a>
+  </div>
+</div>
+
+<!-- 1: About -->
+<div id="sec-about" class="sec-overlay">
+  <div class="about-inner">
+    <p class="section-label rv-fade">About Us</p>
+    <h2 data-split>
+      <span class="rv-line">攻撃者を知るから、</span>
+      <span class="rv-line">守れる。</span>
+    </h2>
+    <p class="rv-fade rv-d2">現役バグハンターが直接担当する、成功報酬型の脆弱性診断。<br>HackerOne・Bugcrowdでの実績を持つ本物の攻撃者視点と、<br>AIによる広範囲スキャンで、見落としのないセキュリティを実現します。</p>
+    <a href="#" class="btn-link rv-fade rv-d3">View More <span class="arr">→</span></a>
+  </div>
+</div>
+
+<!-- 2: WHY US -->
+<div id="sec-whyus" class="sec-overlay">
+  <div class="whyus-inner">
+    <div class="whyus-header">
+      <span class="section-label rv-fade">Why Choose Us</span>
+      <h2 data-split>
+        <span class="rv-line">なぜ、</span>
+        <span class="rv-line">TOTSUKA TECHなのか。</span>
+      </h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card rv-fade rv-d1">
+        <div class="why-accent"></div>
+        <span class="why-num">01</span>
+        <h3>本物の攻撃者が探す</h3>
+        <p>HackerOne・Bugcrowdで実績を持つ現役バグハンターが直接担当。理論ではなく、実際の攻撃手法で脆弱性を暴きます。</p>
+      </div>
+      <div class="why-card rv-fade rv-d2">
+        <div class="why-accent"></div>
+        <span class="why-num">02</span>
+        <h3>成功報酬型、リスクゼロ</h3>
+        <p>脆弱性が発見されなければ費用は発生しません。成功報酬型だからこそ、本気で探します。</p>
+      </div>
+      <div class="why-card rv-fade rv-d3">
+        <div class="why-accent"></div>
+        <span class="why-num">03</span>
+        <h3>AI × 人力のハイブリッド</h3>
+        <p>AIによる広範囲の自動スキャンと、バグハンターの深い手動検証を組み合わせ。見落としを限りなくゼロへ。</p>
+      </div>
+      <div class="why-card rv-fade rv-d4">
+        <div class="why-accent"></div>
+        <span class="why-num">04</span>
+        <h3>最短数日で着手</h3>
+        <p>機密情報の提出不要。完全外部診断だから、相談から最短数日でセキュリティ診断を開始できます。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3: Service -->
+<div id="sec-service" class="sec-overlay">
+  <div class="service-inner">
+    <div class="service-header">
+      <span class="section-label rv-fade">Service</span>
+      <h2 class="rv-fade rv-d1">私たちのサービス</h2>
+    </div>
+    <div class="service-list">
+      <div class="service-item rv-fade rv-d1">
+        <span class="svc-num">01</span>
+        <span class="svc-name">成功報酬型脆弱性診断</span>
+        <span class="svc-desc">Webアプリ・API・モバイルアプリを対象に、バグハンター視点で実践的な脆弱性診断を実施します。</span>
+        <span class="svc-link">View More →</span>
+      </div>
+      <div class="service-item rv-fade rv-d2">
+        <span class="svc-num">02</span>
+        <span class="svc-name">Webアプリ / API 診断</span>
+        <span class="svc-desc">OWASP Top 10 を基軸に、ビジネスロジック欠陥まで含めた網羅的な診断を実施。具体的な改修提案までセットで提供します。</span>
+        <span class="svc-link">View More →</span>
+      </div>
+      <div class="service-item rv-fade rv-d3">
+        <span class="svc-num">03</span>
+        <span class="svc-name">クラウド / AI サービス診断</span>
+        <span class="svc-desc">AWS / GCP 上のインフラ設定ミスやAI・LLMサービス固有の脆弱性（プロンプトインジェクション等）を診断します。</span>
+        <span class="svc-link">View More →</span>
+      </div>
+      <div class="service-item rv-fade rv-d4">
+        <span class="svc-num">04</span>
+        <span class="svc-name">AIプロダクト開発</span>
+        <span class="svc-desc">自社でAIを活用したプロダクトを企画・開発・運営。セキュリティを設計段階から組み込んだAIサービスを構築します。</span>
+        <span class="svc-link">View More →</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4: Vision -->
+<div id="sec-vision" class="sec-overlay">
+  <div class="vision-inner">
+    <p class="section-label rv-fade">Vision</p>
+    <h2>
+      <span class="rv-line">HACK</span>
+      <span class="rv-line">TO</span>
+      <span class="rv-line">PROTECT</span>
+    </h2>
+    <p class="rv-fade rv-d3">攻撃者の視点を持つ者だけが、<br>本当の防御を設計できる。<br>それが、私たちの信念です。</p>
+    <a href="#" class="btn-link rv-fade rv-d4">Company Story <span class="arr">→</span></a>
+  </div>
+</div>
+
+<!-- 5: Flow -->
+<div id="sec-flow" class="sec-overlay">
+  <div class="flow-inner">
+    <div class="flow-header">
+      <span class="section-label rv-fade">How It Works</span>
+      <h2 class="rv-fade rv-d1">診断の流れ</h2>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step rv-fade rv-d1">
+        <div class="flow-step-dot"></div>
+        <span class="flow-step-num">01</span>
+        <h3>無料相談</h3>
+        <p>まずは30分のオンライン相談から。診断範囲・ゴール・リスク感をヒアリングします。</p>
+      </div>
+      <div class="flow-step rv-fade rv-d2">
+        <div class="flow-step-dot"></div>
+        <span class="flow-step-num">02</span>
+        <h3>診断開始</h3>
+        <p>機密情報の提出は不要。契約締結後、最短数日で外部からの診断を開始します。</p>
+      </div>
+      <div class="flow-step rv-fade rv-d3">
+        <div class="flow-step-dot"></div>
+        <span class="flow-step-num">03</span>
+        <h3>脆弱性レポート</h3>
+        <p>発見した脆弱性を深刻度・CVSSスコア・再現手順・修正方法付きで報告します。</p>
+      </div>
+      <div class="flow-step rv-fade rv-d4">
+        <div class="flow-step-dot"></div>
+        <span class="flow-step-num">04</span>
+        <h3>修正確認・完了</h3>
+        <p>修正後の再確認まで無償でサポート。リリース後も継続的な診断でリスクを最小化します。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6: Contact -->
+<div id="sec-contact" class="sec-overlay">
+
+  <!-- Left: Brand info -->
+  <div class="contact-left">
+    <span class="contact-ghost">CONTACT</span>
+    <span class="section-label rv-fade">Get In Touch</span>
+    <h2 class="rv-fade rv-d1">あなたのサービス、<br>安全ですか？</h2>
+    <p class="contact-left-desc rv-fade rv-d2">
+      脆弱性は、発見されるまで存在しないわけではありません。<br>
+      まず相談ください。最短数日で診断を開始します。
+    </p>
+    <div class="contact-left-rule rv-fade rv-d3"></div>
+    <div class="contact-left-info rv-fade rv-d3">
+      <div class="contact-info-item">
+        <span class="contact-info-label">Email</span>
+        <span class="contact-info-val">contact@totsuka-tech.com</span>
+      </div>
+      <div class="contact-info-item">
+        <span class="contact-info-label">Response</span>
+        <span class="contact-info-val">通常48時間以内にご返答</span>
+      </div>
+      <div class="contact-info-item">
+        <span class="contact-info-label">First Call</span>
+        <span class="contact-info-val">30分 / オンライン無料相談</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="contact-right rv-fade rv-d2">
+    <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <div class="form-row-2">
+        <div class="form-field">
+          <label class="form-label" for="company">会社名 / 屋号</label>
+          <input class="form-input" id="company" name="company" type="text" placeholder="株式会社〇〇">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="name">お名前 *</label>
+          <input class="form-input" id="name" name="name" type="text" placeholder="山田 太郎" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="email">メールアドレス *</label>
+        <input class="form-input" id="email" name="email" type="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="type">ご依頼の種別</label>
+        <select class="form-select" id="type" name="type">
+          <option value="">選択してください</option>
+          <option value="vuln">成功報酬型脆弱性診断</option>
+          <option value="webapp">Webアプリ / API 診断</option>
+          <option value="cloud">クラウド / AI サービス診断</option>
+          <option value="ai">AIプロダクト開発</option>
+          <option value="other">その他・まずは相談したい</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="message">お問い合わせ内容 *</label>
+        <textarea class="form-textarea" id="message" name="message" placeholder="課題・要件・予算感など、お気軽にご記入ください。" required></textarea>
+      </div>
+      <div class="form-footer">
+        <span class="form-note">* は必須項目です</span>
+        <button type="submit" class="form-submit">送信する <span>→</span></button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────────
+//  LAYER 1 — Firefly loop (video-frames/, 24fps ping-pong)
+// ──────────────────────────────────────────────────
+const vCanvas  = document.getElementById('video-bg');
+const vCtx     = vCanvas.getContext('2d');
+const sCanvas  = document.getElementById('video-scroll');
+const sCtx     = sCanvas.getContext('2d');
+const rCanvas  = document.getElementById('video-rtl');
+const rCtx     = rCanvas.getContext('2d');
+
+const FRAME_COUNT  = 192;
+const LOOP_PATH    = 'video-frames/frame_';
+const SCROLL_PATH  = 'video-frames-renew/frame_';
+
+const RTL_COUNT = 193;
+const RTL_PATH  = 'rtl-frames/frame_';
+const rtlFrames = new Array(RTL_COUNT);
+let   rtlLoaded = 0;
+
+const loopFrames   = new Array(FRAME_COUNT);
+const scrollFrames = new Array(FRAME_COUNT);
+let loopLoaded     = 0;
+let scrollLoaded   = 0;
+
+const bar      = document.getElementById('loading-bar');
+const barInner = document.getElementById('loading-bar-inner');
+const TOTAL    = FRAME_COUNT * 2;
+let totalLoaded = 0;
+function onFrameLoad() {
+  totalLoaded++;
+  barInner.style.width = (totalLoaded / TOTAL * 100) + '%';
+  if (totalLoaded === TOTAL) {
+    setTimeout(() => { bar.style.opacity = '0'; }, 400);
+    setTimeout(() => { bar.style.display = 'none'; }, 900);
+  }
+}
+
+let loopIdx      = 0;
+let lastLoopTime = 0;
+const FPS       = 24;
+const FRAME_INT = 1000 / FPS;
+
+let scrollProgress = 0;
+let scrollFrameIdx = 0;
+
+function resizeVideos() {
+  vCanvas.width  = sCanvas.width  = rCanvas.width  = window.innerWidth;
+  vCanvas.height = sCanvas.height = rCanvas.height = window.innerHeight;
+}
+
+function drawCover(ctx, img) {
+  if (!img || !img.complete || !img.naturalWidth) return;
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+  ctx.clearRect(0, 0, W, H);
+  ctx.drawImage(img, (W - w) * .5, (H - h) * .5, w, h);
+}
+
+function drawCoverAlpha(ctx, img, alpha) {
+  if (!img || !img.complete || !img.naturalWidth) return;
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(img, (W - w) * .5, (H - h) * .5, w, h);
+  ctx.restore();
+}
+
+function preloadAll() {
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const num = String(i + 1).padStart(4, '0');
+    const lImg = new Image();
+    lImg.src = `${LOOP_PATH}${num}.jpg`;
+    lImg.onload = () => { loopLoaded++; onFrameLoad(); if (i === 0) drawCover(vCtx, lImg); };
+    loopFrames[i] = lImg;
+
+    const sImg = new Image();
+    sImg.src = `${SCROLL_PATH}${num}.jpg`;
+    sImg.onload = () => { scrollLoaded++; onFrameLoad(); };
+    scrollFrames[i] = sImg;
+  }
+  for (let i = 0; i < RTL_COUNT; i++) {
+    const num = String(i + 1).padStart(4, '0');
+    const img = new Image();
+    img.src = `${RTL_PATH}${num}.jpg`;
+    img.onload = () => { rtlLoaded++; };
+    rtlFrames[i] = img;
+  }
+}
+
+// Ping-pong loop
+const LOOP_START = 24;
+let loopDir = 1;
+function tickLoop(now) {
+  if (loopLoaded < LOOP_START) return;
+  if (now - lastLoopTime >= FRAME_INT) {
+    lastLoopTime = now;
+    loopIdx += loopDir;
+    if (loopIdx >= FRAME_COUNT - 1) { loopIdx = FRAME_COUNT - 1; loopDir = -1; }
+    else if (loopIdx <= 0)          { loopIdx = 0;               loopDir =  1; }
+    vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+    drawCoverAlpha(vCtx, loopFrames[loopIdx], 1);
+  }
+}
+
+function tickScroll() {
+  if (scrollLoaded < FRAME_COUNT) return;
+  const idx = Math.round(scrollProgress * (FRAME_COUNT - 1));
+  if (idx !== scrollFrameIdx) {
+    scrollFrameIdx = idx;
+    drawCover(sCtx, scrollFrames[idx]);
+  }
+}
+
+/* ── TriOrb-style char split ── */
+function splitToChars(el, baseDelay, stagger) {
+  const lines = el.querySelectorAll('.rv-line');
+  let globalIdx = 0;
+  lines.forEach(line => {
+    const text = line.textContent;
+    line.innerHTML = [...text].map(ch => {
+      if (ch === ' ') return '<span style="display:inline-block;width:.25em"> </span>';
+      const d = (baseDelay + globalIdx * stagger).toFixed(3);
+      globalIdx++;
+      return `<span class="cw"><span class="ch" style="--d:${d}s">${ch}</span></span>`;
+    }).join('');
+  });
+}
+
+function splitHeroChars(el, baseDelay, stagger) {
+  const lines = el.querySelectorAll('.rl');
+  let globalIdx = 0;
+  lines.forEach(line => {
+    const text = line.textContent;
+    line.innerHTML = [...text].map(ch => {
+      if (ch === ' ') return '<span style="display:inline-block;width:.25em"> </span>';
+      const d = (baseDelay + globalIdx * stagger).toFixed(3);
+      globalIdx++;
+      return `<span class="cw"><span class="ch" style="--d:${d}s">${ch}</span></span>`;
+    }).join('');
+  });
+}
+
+function initCharSplit() {
+  // Hero tagline
+  const heroH1 = document.querySelector('[data-split-hero]');
+  if (heroH1) splitHeroChars(heroH1, 1.5, 0.045);
+
+  // Section headings
+  document.querySelectorAll('[data-split]').forEach((el, i) => {
+    splitToChars(el, 0.1, 0.038);
+  });
+
+  // rv-fade delays
+  document.querySelectorAll('.rv-fade').forEach(el => {
+    const d = el.dataset.delay || el.style.getPropertyValue('--d') || '0.3';
+    if (!el.style.getPropertyValue('--d')) el.style.setProperty('--d', '0.3s');
+  });
+}
+initCharSplit();
+
+/* ── Nav scroll: #sec-* anchor → scroll zone position ── */
+const NAV_SP = {
+  'sec-about':   0.12,
+  'sec-whyus':   0.29,
+  'sec-service': 0.46,
+  'sec-vision':  0.57,
+  'sec-flow':    0.68,
+  'sec-contact': 0.84,
+};
+
+function scrollToSp(sp) {
+  const zone = document.getElementById('scroll-zone');
+  const total = zone.offsetHeight - window.innerHeight;
+  const target = sp * total;
+  window.scrollTo({ top: target, behavior: 'smooth' });
+}
+
+document.querySelectorAll('a[href^="#sec-"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const id = link.getAttribute('href').slice(1);
+    if (NAV_SP[id] !== undefined) scrollToSp(NAV_SP[id]);
+  });
+});
+
+function getScrollProgress() {
+  const zone  = document.getElementById('scroll-zone');
+  const total = zone.offsetHeight - window.innerHeight;
+  return Math.max(0, Math.min(1, window.scrollY / total));
+}
+
+// Section timing: [fadeIn, fullIn, fullOut, fadeOut]
+const SEC_TIMING = [
+  [0.00, 0.00, 0.07, 0.10],  // 0 Hero
+  [0.09, 0.12, 0.19, 0.22],  // 1 About
+  [0.26, 0.29, 0.36, 0.39],  // 2 WHY US (gap: 0.22→0.26)
+  [0.43, 0.46, 0.52, 0.55],  // 3 Service (gap: 0.39→0.43)
+  [0.53, 0.57, 0.63, 0.67],  // 4 Vision (cross-fade)
+  [0.65, 0.68, 0.82, 0.86],  // 5 Flow (full: 0.68–0.82 = 252vh)
+  [0.80, 0.84, 9.99, 9.99],  // 6 Contact (stays; fades when past scroll zone)
+];
+
+function secAlpha(t, sp) {
+  const [fi, fw, fo, fe] = t;
+  if (sp < fi) return 0;
+  if (sp < fw) return fw === fi ? 1 : (sp - fi) / (fw - fi);
+  if (sp < fo) return 1;
+  if (sp < fe) return 1 - (sp - fo) / (fe - fo);
+  return 0;
+}
+
+const secEls = [
+  document.getElementById('sec-hero'),
+  document.getElementById('sec-about'),
+  document.getElementById('sec-whyus'),
+  document.getElementById('sec-service'),
+  document.getElementById('sec-vision'),
+  document.getElementById('sec-flow'),
+  document.getElementById('sec-contact'),
+  // Footer is a real element (not managed here)
+];
+const dotEls  = document.querySelectorAll('.sec-dot');
+const scrollIndEl = null; // removed from HTML
+
+// ──────────────────────────────────────────────────
+//  PARTICLE / EFFECTS CANVAS
+// ──────────────────────────────────────────────────
+const canvas  = document.getElementById('c');
+const ctx     = canvas.getContext('2d');
+
+let W, H;
+const START  = performance.now();
+const SPRING = 0.045, DAMP = 0.82, REPEL_R = 110, REPEL_F = 16;
+const SVG_W  = 512.92, SVG_H = 415.57;
+const mouse  = { x: -9999, y: -9999 };
+
+function hexRgb(h) {
+  return `${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;
+}
+
+function formation() {
+  const fw = Math.min(W * 0.38, 470);
+  const fh = fw * (SVG_H / SVG_W);
+  const ox = (W - fw) * 0.5;
+  const oy = H * 0.10;
+  return { fw, fh, ox, oy };
+}
+
+const LOGO = [
+  {cx:12.65, cy:35.79, r:12.65, hex:'#7dbd1f'},
+  {cx:48.45, cy:70.15, r:7.66,  hex:'#1ca93d'},
+  {cx:60.80, cy:33.73, r:20.01, hex:'#71b825'},
+  {cx:94.87, cy:68.72, r:12.57, hex:'#069c47'},
+  {cx:127.35,cy:28.32, r:23.84, hex:'#69b32c'},
+  {cx:176.11,cy:71.39, r:11.48, hex:'#76c026'},
+  {cx:203.11,cy:21.48, r:21.48, hex:'#05925b'},
+  {cx:242.91,cy:68.72, r:24.58, hex:'#6cb82b'},
+  {cx:294.19,cy:23.32, r:23.32, hex:'#80c023'},
+  {cx:333.22,cy:69.81, r:18.73, hex:'#089d46'},
+  {cx:379.46,cy:25.54, r:25.54, hex:'#079c45'},
+  {cx:418.63,cy:67.65, r:13.62, hex:'#67b92a'},
+  {cx:447.88,cy:29.19, r:18.24, hex:'#7ac124'},
+  {cx:462.96,cy:69.81, r:7.63,  hex:'#099a45'},
+  {cx:500.00,cy:36.24, r:12.92, hex:'#82c322'},
+  {cx:285.36,cy:110.98,r:14.49, hex:'#7fc120'},
+  {cx:214.45,cy:133.12,r:24.67, hex:'#089a43'},
+  {cx:273.00,cy:163.59,r:21.18, hex:'#69b628'},
+  {cx:284.83,cy:207.00,r:9.49,  hex:'#059146'},
+  {cx:221.70,cy:208.18,r:20.34, hex:'#7dbf22'},
+  {cx:265.43,cy:244.95,r:15.73, hex:'#04905a'},
+  {cx:221.70,cy:267.23,r:12.49, hex:'#79be23'},
+  {cx:271.53,cy:296.45,r:19.72, hex:'#77bc24'},
+  {cx:221.70,cy:334.26,r:20.34, hex:'#6db828'},
+  {cx:270.08,cy:358.05,r:12.37, hex:'#6bcb3d'},
+  {cx:234.04,cy:386.99,r:8.42,  hex:'#64bf2e'},
+  {cx:273.64,cy:401.28,r:14.29, hex:'#069e44'},
+];
+LOGO.forEach(d => { d.rgb = hexRgb(d.hex); });
+
+function seededRng(seed) {
+  let s = seed;
+  return () => { s = (s*1664525+1013904223)&0xFFFFFFFF; return(s>>>0)/0xFFFFFFFF; };
+}
+
+let bgDots = [], bgReady = false;
+function buildBgNetwork() {
+  const rng = seededRng(137);
+  bgDots = Array.from({length:80}, () => ({
+    x:rng()*W, y:rng()*H, r:0.4+rng()*1.0, bright:rng()>0.88
+  }));
+  bgReady = true;
+}
+
+// Fluid ribbon — used in Flow section
+function drawFluidMesh(elapsed) {
+  const ph = elapsed * 0.055;
+  ctx.save();
+  const bands = [
+    {baseY:0.18, ht:0.072, amp:0.090, alpha:0.22, ph0:0.0},
+    {baseY:0.36, ht:0.080, amp:0.100, alpha:0.18, ph0:1.2},
+    {baseY:0.56, ht:0.065, amp:0.075, alpha:0.14, ph0:2.4},
+    {baseY:0.72, ht:0.055, amp:0.060, alpha:0.10, ph0:3.7},
+  ];
+  for (const b of bands) {
+    const y0=H*b.baseY, rh=H*b.ht, a=H*b.amp, t=ph+b.ph0;
+    const w1=Math.sin(t)*a, w2=Math.cos(t*0.85+0.4)*a*0.75, w3=Math.sin(t*1.1+1.0)*a*0.55;
+    ctx.beginPath();
+    ctx.moveTo(-80, y0+w1*0.3);
+    ctx.bezierCurveTo(W*0.30, y0-w1, W*0.70, y0+w2, W+80, y0-w3);
+    ctx.lineTo(W+80, y0+rh-w3);
+    ctx.bezierCurveTo(W*0.70, y0+rh+w2, W*0.30, y0+rh-w1, -80, y0+rh+w1*0.3);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, y0, 0, y0+rh);
+    grad.addColorStop(0,   `rgba(70,215,155,${b.alpha*0.30})`);
+    grad.addColorStop(0.5, `rgba(90,230,160,${b.alpha})`);
+    grad.addColorStop(1,   `rgba(70,215,155,${b.alpha*0.30})`);
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.strokeStyle = `rgba(160,255,210,${b.alpha*0.55})`; ctx.lineWidth = 0.6; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// Ambient micro-dots
+const AMB_COLORS=['#7DC444','#1B7D32','#80c023','#069e44','#6bcb3d'];
+class Ambient{
+  constructor(pre){this.life=0;this._spawn();if(pre)this.life=Math.floor(Math.random()*this.maxLife);}
+  _spawn(){
+    this.x=Math.random()*W;this.y=Math.random()*H;this.r=0.5+Math.random()*1.3;
+    this.rgb=hexRgb(AMB_COLORS[Math.floor(Math.random()*AMB_COLORS.length)]);
+    this.vx=(Math.random()-0.5)*0.14;this.vy=-0.07-Math.random()*0.18;
+    this.maxLife=220+Math.random()*280;this.life=0;
+  }
+  update(){this.x+=this.vx;this.y+=this.vy;this.life++;const t=this.life/this.maxLife;this.alpha=(t<0.12?t/0.12:t>0.80?(1-t)/0.20:1)*0.52;if(this.life>this.maxLife||this.y<-5)this._spawn();}
+  draw(){if(this.alpha<0.01)return;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowBlur=3;ctx.shadowColor=`rgba(${this.rgb},0.8)`;ctx.fillStyle=`rgba(${this.rgb},1.0)`;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.restore();}
+}
+
+let ambients = [];
+
+function resize(){
+  W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight;
+  resizeVideos();
+  if(bgReady){bgReady=false;buildBgNetwork();}
+}
+
+function init(){
+  resize(); buildBgNetwork();
+  ambients=Array.from({length:140},()=>new Ambient(true));
+  preloadAll();
+  onScroll(); // set initial section states
+}
+
+// ── Main render loop ───────────────────────────────
+function renderLoop(t){
+  const elapsed=(t-START)/1000;
+
+  tickLoop(t);
+  tickScroll();
+
+  const sp = scrollProgress;
+  const heroAlpha = sp < 0.10 ? 1.0 : Math.max(0, 1 - (sp - 0.10) / 0.04);
+  const rtlAlpha  = sp > 0.77  ? Math.min(1, (sp - 0.77) / 0.05) * 0.80 : 0;
+  const particleAlpha = Math.max(heroAlpha, rtlAlpha);
+
+  ctx.clearRect(0,0,W,H);
+
+  if (particleAlpha > 0.01) {
+    ctx.save(); ctx.globalAlpha = particleAlpha;
+    const vigAlpha = 0.18 * (1 - sp * 0.7);
+    ctx.fillStyle=`rgba(6,14,6,${vigAlpha})`;
+    ctx.fillRect(0,0,W,H);
+    for(const a of ambients){a.update();a.draw();}
+    ctx.restore();
+  }
+
+  const fadeA=Math.max(0,1-elapsed/2.0);
+  if(fadeA>0.002){ctx.save();ctx.globalAlpha=fadeA;ctx.fillStyle='#060E06';ctx.fillRect(0,0,W,H);ctx.restore();}
+
+  // RTL scroll-driven frame
+  if (rtlProgress > 0 && rtlLoaded > 0) {
+    const idx = Math.min(RTL_COUNT - 1, Math.round(rtlProgress * (RTL_COUNT - 1)));
+    const frame = rtlFrames[idx];
+    if (frame && frame.complete && frame.naturalWidth) {
+      rCtx.clearRect(0, 0, rCanvas.width, rCanvas.height);
+      drawCoverAlpha(rCtx, frame, 1);
+    }
+  }
+
+  requestAnimationFrame(renderLoop);
+}
+
+// ── Scroll handling ────────────────────────────────
+function onScroll(){
+  scrollProgress = getScrollProgress();
+  const sp = scrollProgress;
+
+  // Cross-fade loop→scroll (sp 0.07→0.25)
+  const cf = Math.max(0, Math.min(1, (sp - 0.07) / 0.18));
+  const eased = cf < 0.5 ? 2*cf*cf : -1+(4-2*cf)*cf;
+  vCanvas.style.opacity = (1 - eased).toString();
+  sCanvas.style.opacity = eased.toString();
+
+  // スクロールゾーンを超えたらContact含む固定レイヤーをフェードアウト
+  const zone = document.getElementById('scroll-zone');
+  const pastZone = window.scrollY > zone.offsetHeight - window.innerHeight + 20;
+  if (pastZone) {
+    const fadeOut = Math.min(1, (window.scrollY - (zone.offsetHeight - window.innerHeight)) / (window.innerHeight * 0.3));
+    document.querySelectorAll('.sec-overlay').forEach(el => {
+      el.style.opacity = (1 - fadeOut).toString();
+    });
+    vCanvas.style.opacity = (1 - fadeOut).toString();
+    sCanvas.style.opacity = (1 - fadeOut).toString();
+    return;
+  }
+
+  // Section overlays
+  let activeSec = 0;
+  for (let i = 0; i < secEls.length; i++) {
+    if (!secEls[i]) continue;
+    const a = secAlpha(SEC_TIMING[i], sp);
+    secEls[i].style.opacity = a.toString();
+    if (a > 0.01) {
+      secEls[i].classList.add('active');
+      if (a >= 0.5) activeSec = i;
+    } else {
+      secEls[i].classList.remove('active');
+    }
+  }
+
+  dotEls.forEach((d, i) => d.classList.toggle('on', i === activeSec));
+
+  // Scroll indicator removed
+
+  // RTL transition (sp 0.75 → 1.0)
+  const RTL_SP_START = 0.82;
+  rtlProgress = Math.max(0, Math.min(1, (sp - RTL_SP_START) / (1.0 - RTL_SP_START)));
+  // Fade in fast, hold, fade out near very end
+  const rtlOpacity = rtlProgress < 0.15
+    ? rtlProgress / 0.15
+    : rtlProgress > 0.88
+    ? Math.max(0, 1 - (rtlProgress - 0.88) / 0.12)
+    : 1.0;
+  rCanvas.style.opacity = rtlOpacity.toString();
+}
+
+let rtlProgress = 0;
+
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; });
+window.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; });
+
+init();
+requestAnimationFrame(renderLoop);
+
+// Hero text reveal
+setTimeout(() => {
+  document.documentElement.classList.add('hero-ready');
+  const heroEl = document.getElementById('sec-hero');
+  if (heroEl) heroEl.classList.add('active');
+}, 200);
+
+// ── Contact form AJAX ──────────────────────────────
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = contactForm.querySelector('.form-submit');
+    const orig = btn.textContent;
+    btn.textContent = '送信中...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        contactForm.innerHTML = '<p class="form-thanks">お問い合わせを受け付けました。<br>3営業日以内に担当者よりご連絡いたします。</p>';
+      } else {
+        btn.textContent = 'もう一度お試しください';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      btn.textContent = 'もう一度お試しください';
+      btn.disabled = false;
+    }
+  });
+}
+</script>
+</body>
+</html>

@@ -600,14 +600,24 @@
       }
       .contact-ghost { display:none; }
       .contact-left {
-        padding: 80px 20px 24px !important;
+        position: sticky;
+        top: 0;
+        padding: 72px 20px 20px !important;
         border-right: none !important;
         border-bottom: 1px solid rgba(255,255,255,.08);
         min-width: 0; width:100%;
+        background: rgba(4,9,4,0.97);
+        z-index: 1;
+        -webkit-overflow-scrolling: touch;
       }
-      .contact-left h2 { font-size:clamp(1.8rem,8vw,3rem) !important; }
-      .contact-left-desc { font-size:12px; }
-      .contact-right { padding:24px 20px 40px !important; width:100%; }
+      .contact-left h2 { font-size:clamp(1.6rem,7vw,2.6rem) !important; margin-bottom:12px; }
+      .contact-left-desc { font-size:11px; margin-bottom:16px !important; }
+      .contact-left-rule { margin-bottom:14px !important; }
+      .contact-left-info { gap:8px !important; }
+      .contact-info-item { gap:10px !important; }
+      .contact-info-label { font-size:7px !important; }
+      .contact-info-val { font-size:11px !important; }
+      .contact-right { padding:20px 20px 40px !important; width:100%; }
       .form-row-2 { grid-template-columns:1fr !important; }
       .form-label { font-size:9px; }
       .form-input, .form-select, .form-textarea { font-size:14px; }

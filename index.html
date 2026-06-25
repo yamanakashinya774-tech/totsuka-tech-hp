@@ -464,6 +464,52 @@
     }
 
     /* ── Mobile media queries ── */
+    /* ══════════════════════════════════════
+       TABLET (iPad Pro portrait / iPad landscape)
+       769px – 1024px
+    ══════════════════════════════════════ */
+    @media (min-width:769px) and (max-width:1024px) {
+      /* Header */
+      header { padding:16px 28px; }
+
+      /* Hero */
+      .hero-content { left:40px; max-width:680px; }
+      .hero-tagline { font-size:clamp(3rem,6vw,7rem); }
+
+      /* WHY US: 4列 → 2列 */
+      .whyus-inner { padding:0 40px; }
+      .why-grid { grid-template-columns:repeat(2,1fr) !important; gap:0; }
+      .why-card { padding:24px 20px 24px 0; }
+
+      /* Service */
+      .service-inner { padding:0 40px; }
+
+      /* Flow: 4列 → 2列 */
+      .flow-inner { padding:0 40px; }
+      .flow-steps { grid-template-columns:repeat(2,1fr) !important; gap:32px 28px; }
+      .flow-steps::before { display:none; }
+
+      /* Contact: 2列 → 1列 */
+      #sec-contact { grid-template-columns:1fr !important; overflow-y:auto; }
+      .contact-ghost { display:none; }
+      .contact-left {
+        padding:48px 40px 28px !important;
+        border-right:none !important;
+        border-bottom:1px solid rgba(255,255,255,.08);
+      }
+      .contact-right { padding:28px 40px 48px !important; }
+      .form-row-2 { grid-template-columns:1fr 1fr; }
+
+      /* Footer */
+      .ft-main { grid-template-columns:160px 1fr 1fr 1fr !important; }
+
+      /* dots非表示 */
+      #sec-dots { display:none; }
+    }
+
+    /* ══════════════════════════════════════
+       SMARTPHONE (〜768px)
+    ══════════════════════════════════════ */
     @media (max-width:768px) {
       /* ── Header ── */
       header { padding:14px 20px; }
@@ -543,6 +589,29 @@
       /* ── Misc ── */
       #sec-dots { display:none; }
       #scroll-zone { height:1200vh; }
+    }
+
+    /* ══════════════════════════════════════
+       SMALL PHONE (iPhone SE / 〜390px)
+    ══════════════════════════════════════ */
+    @media (max-width:390px) {
+      .hero-tagline { font-size:clamp(2rem,11vw,3.8rem); }
+      .hero-eyebrow { font-size:7.5px; }
+      .hero-sub { font-size:6.5px; letter-spacing:.10em; }
+      .hero-cta { padding:11px 22px; font-size:8.5px; }
+
+      .whyus-header h2,
+      .flow-header h2,
+      .service-header h2 { font-size:clamp(1.6rem,9vw,2.8rem); }
+
+      .why-card h3, .flow-step h3 { font-size:13px; }
+      .why-card p, .flow-step p, .svc-desc { font-size:11px; }
+
+      .contact-left h2 { font-size:clamp(1.6rem,9vw,2.6rem) !important; }
+      .contact-left-desc { font-size:11px; }
+
+      .ft-main { padding:28px 16px 16px; }
+      .ft-copy { padding:10px 16px; }
     }
   </style>
 </head>

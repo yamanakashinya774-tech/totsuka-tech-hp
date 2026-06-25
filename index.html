@@ -522,27 +522,37 @@
       .hero-sub { font-size:7.5px; letter-spacing:.14em; margin-bottom:24px; }
       .hero-cta { padding:12px 28px; font-size:9px; }
 
-      /* ── ヘッダー被り防止: セクション上部余白 ── */
-      .about-inner, .whyus-inner, .service-inner,
-      .vision-inner, .flow-inner { padding-top:72px !important; }
+      /* ── セクション共通: スクロール可・高さauto ── */
+      #sec-about, #sec-whyus, #sec-service, #sec-vision, #sec-flow {
+        overflow-y: auto;
+        align-items: flex-start !important;
+      }
 
       /* ── About ── */
-      .about-inner { padding-left:20px !important; padding-right:20px !important; max-width:100%; }
-      #sec-about { background:rgba(4,9,4,0.88) !important; }
+      .about-inner {
+        padding: 80px 20px 40px !important;
+        height:auto !important; max-width:100%;
+      }
+      #sec-about { background:rgba(4,9,4,0.90) !important; }
       #sec-about h2 { font-size:clamp(2rem,9vw,3.5rem); }
       #sec-about .btn-link { display:none; }
 
       /* ── WHY US ── */
-      .whyus-inner { padding-left:20px !important; padding-right:20px !important; }
+      .whyus-inner {
+        padding: 80px 20px 40px !important;
+        height:auto !important;
+      }
       .whyus-header h2 { font-size:clamp(1.8rem,8vw,3.2rem); }
       .why-grid { grid-template-columns:1fr !important; gap:0; }
       .why-card { padding:18px 0; }
       .why-card p { font-size:11.5px; line-height:1.9; }
 
       /* ── Service ── */
-      .service-inner { padding:0 20px !important; }
+      .service-inner {
+        padding: 80px 20px 40px !important;
+        height:auto !important;
+      }
       .service-header h2 { font-size:clamp(1.6rem,7vw,2.8rem); }
-      /* 4列グリッドをフレックス縦積みに完全置換 */
       .service-item {
         display:flex !important;
         flex-direction:column !important;
@@ -556,38 +566,46 @@
       .svc-link { white-space:normal !important; margin-top:2px !important; }
 
       /* ── Vision ── */
-      .vision-inner { padding:0 20px; max-width:100%; text-align:left; }
-      #sec-vision { background:rgba(4,9,4,0.85) !important; align-items:flex-start; }
-      .vision-inner h2 { font-size:clamp(3.5rem,18vw,7rem); }
+      .vision-inner {
+        padding: 80px 20px 40px !important;
+        height:auto !important; max-width:100%; text-align:left;
+      }
+      #sec-vision { background:rgba(4,9,4,0.88) !important; }
+      .vision-inner h2 { font-size:clamp(3rem,15vw,6rem); }
       .vision-inner p { font-size:12px; }
       .vision-inner .btn-link { justify-content:flex-start; }
 
       /* ── Flow ── */
-      .flow-inner { padding:0 20px; }
+      .flow-inner {
+        padding: 80px 20px 40px !important;
+        height:auto !important;
+      }
       .flow-header h2 { font-size:clamp(1.8rem,8vw,3rem); }
-      .flow-steps { grid-template-columns:1fr !important; gap:20px; }
-      .flow-step { padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,.07); }
-      .flow-step:last-child { border-bottom:none; }
+      .flow-steps { grid-template-columns:1fr !important; gap:0; }
+      .flow-step { padding:16px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+      .flow-step:last-child { border-bottom:none; padding-bottom:40px; }
       .flow-step h3 { font-size:14px; }
       .flow-step p { font-size:12px; line-height:1.9; }
       .flow-steps::before { display:none; }
+      .flow-step-dot { margin-bottom:10px; }
 
       /* ── Contact ── */
       #sec-contact {
         grid-template-columns: 1fr !important;
         grid-template-rows: auto auto;
         overflow-y: auto;
+        align-items: flex-start !important;
       }
       .contact-ghost { display:none; }
       .contact-left {
-        padding: 40px 20px 24px !important;
+        padding: 80px 20px 24px !important;
         border-right: none !important;
         border-bottom: 1px solid rgba(255,255,255,.08);
-        min-width: 0;
+        min-width: 0; width:100%;
       }
       .contact-left h2 { font-size:clamp(1.8rem,8vw,3rem) !important; }
       .contact-left-desc { font-size:12px; }
-      .contact-right { padding:24px 20px 40px !important; }
+      .contact-right { padding:24px 20px 40px !important; width:100%; }
       .form-row-2 { grid-template-columns:1fr !important; }
       .form-label { font-size:9px; }
       .form-input, .form-select, .form-textarea { font-size:14px; }

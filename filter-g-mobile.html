@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOTSUKA TECH — セキュリティ × 開発で、事業を守り育てる</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #060E06; overflow-x: hidden; color: #fff; padding-bottom: 64px; }
+    a { text-decoration: none; }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(6,14,6,0.90);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .logo-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .logo-svg { width:34px; height:auto; filter:drop-shadow(0 0 4px rgba(130,195,34,0.25)); animation:float-breath 2.6s ease-in-out infinite; }
+    @keyframes float-breath {
+      0%,100% { transform:translateY(0) scale(1.00); }
+      50%      { transform:translateY(-5px) scale(1.03); }
+    }
+    .logo-name { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.18em; color:#fff; text-transform:uppercase; line-height:1; }
+    .logo-sub  { font-family:'Inter',sans-serif; font-size:7.5px; font-weight:400; letter-spacing:.32em; color:rgba(255,255,255,.36); text-transform:uppercase; line-height:1; }
+    .hamburger {
+      display:flex; flex-direction:column; justify-content:center;
+      gap:5px; background:none; border:none; cursor:pointer; padding:6px;
+    }
+    .hamburger span {
+      display:block; width:22px; height:1.5px; background:rgba(255,255,255,.75);
+      transition:transform .3s ease, opacity .3s ease;
+    }
+    .nav-open .hamburger span:nth-child(1) { transform:rotate(45deg) translate(4.7px,4.7px); }
+    .nav-open .hamburger span:nth-child(2) { opacity:0; }
+    .nav-open .hamburger span:nth-child(3) { transform:rotate(-45deg) translate(4.7px,-4.7px); }
+
+    /* ── MOBILE NAV OVERLAY ── */
+    .mobile-nav {
+      display:none; position:fixed; inset:0; background:rgba(4,9,4,0.97);
+      z-index:98; flex-direction:column; align-items:center; justify-content:center; gap:34px;
+    }
+    .mobile-nav.open { display:flex; }
+    .mobile-nav a {
+      font-family:'Inter',sans-serif; font-size:14px; font-weight:500;
+      letter-spacing:.22em; color:rgba(255,255,255,.60); text-transform:uppercase;
+    }
+    .mobile-nav .nav-contact-m {
+      margin-top:10px; border:1px solid rgba(130,195,34,.45);
+      padding:12px 36px; color:rgba(130,195,34,.90)!important;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position:relative; min-height:100svh; min-height:100vh;
+      display:flex; flex-direction:column; justify-content:flex-end;
+      padding:0 22px 60px; overflow:hidden; padding-top:64px;
+    }
+    .hero-bg {
+      position:absolute; inset:0; z-index:0;
+      background:
+        radial-gradient(ellipse 70% 55% at 15% 75%, rgba(130,195,34,0.10) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 80% 20%, rgba(6,158,68,0.07) 0%, transparent 60%),
+        linear-gradient(160deg, #060E06 0%, #071407 55%, #060E06 100%);
+    }
+    /* Grid texture */
+    .hero-bg::after {
+      content:''; position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(130,195,34,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(130,195,34,0.035) 1px, transparent 1px);
+      background-size:44px 44px;
+      mask-image:radial-gradient(ellipse at 25% 80%, black 15%, transparent 70%);
+      -webkit-mask-image:radial-gradient(ellipse at 25% 80%, black 15%, transparent 70%);
+    }
+    /* Decorative large logo mark */
+    .hero-deco-logo {
+      position:absolute; right:-12%; top:50%; transform:translateY(-54%);
+      width:72vw; height:auto; opacity:0.042;
+      pointer-events:none; z-index:1;
+      animation:deco-breathe 5s ease-in-out infinite alternate;
+    }
+    @keyframes deco-breathe {
+      from { opacity:0.030; transform:translateY(-54%) scale(0.97); }
+      to   { opacity:0.055; transform:translateY(-52%) scale(1.02); }
+    }
+    /* Glow orb */
+    .hero-glow {
+      position:absolute; bottom:-10%; left:-20%;
+      width:85vw; height:85vw;
+      background:radial-gradient(circle, rgba(130,195,34,0.08) 0%, transparent 70%);
+      border-radius:50%; pointer-events:none; z-index:1;
+      animation:glow-pulse 5.5s ease-in-out infinite alternate;
+    }
+    @keyframes glow-pulse {
+      from { transform:scale(0.88) translate(0,0); opacity:0.6; }
+      to   { transform:scale(1.10) translate(6%,-6%); opacity:1; }
+    }
+    /* CSS-only particles */
+    .hero-particles { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:2; }
+    .hero-particles span {
+      position:absolute; border-radius:50%; background:#82c322; opacity:0;
+      animation:particle-rise linear infinite;
+    }
+    @keyframes particle-rise {
+      0%   { opacity:0;    transform:translateY(0); }
+      8%   { opacity:0.55; }
+      88%  { opacity:0.18; }
+      100% { opacity:0;    transform:translateY(-95vh); }
+    }
+    .hero-content { position:relative; z-index:3; }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'Inter',sans-serif; font-size:8px; letter-spacing:.38em;
+      color:rgba(130,195,34,.72); text-transform:uppercase;
+      margin-bottom:22px;
+      animation:fade-up .8s ease .2s both;
+    }
+    .hero-badge::before {
+      content:''; display:block; width:14px; height:1px; background:#82c322; opacity:.7;
+    }
+    .hero-tagline {
+      font-family:'Noto Sans JP',sans-serif;
+      font-size:clamp(2.8rem,13.5vw,4.8rem);
+      font-weight:700; color:#fff; line-height:1.08;
+      letter-spacing:-.02em; margin-bottom:20px;
+      animation:fade-up .8s ease .4s both;
+    }
+    .hero-sub {
+      font-family:'Inter',sans-serif; font-size:7.5px;
+      letter-spacing:.20em; color:rgba(118,196,30,.78);
+      text-transform:uppercase; line-height:2.2; margin-bottom:34px;
+      animation:fade-up .8s ease .6s both;
+    }
+    .hero-cta {
+      display:inline-flex; align-items:center; gap:12px;
+      padding:13px 30px; position:relative;
+      color:#82c322; font-family:'Inter',sans-serif;
+      font-size:10px; font-weight:600; letter-spacing:.22em;
+      text-transform:uppercase; border:1px solid rgba(130,195,34,.42);
+      animation:fade-up .8s ease .8s both;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .hero-cta:active { background:rgba(130,195,34,.07); }
+    @keyframes fade-up {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .scroll-hint {
+      position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+      z-index:3; display:flex; flex-direction:column; align-items:center; gap:5px;
+      animation:fade-up 1s ease 1.4s both;
+    }
+    .scroll-hint span { font-family:'Inter',sans-serif; font-size:7px; letter-spacing:.28em; color:rgba(255,255,255,.20); text-transform:uppercase; }
+    .scroll-line { width:1px; height:26px; background:linear-gradient(to bottom,rgba(130,195,34,.30),transparent); }
+
+    /* ── SECTION SHARED ── */
+    .m-section { padding:68px 22px 52px; border-top:1px solid rgba(255,255,255,0.05); }
+    .section-label {
+      font-family:'Inter',sans-serif; font-size:8.5px; letter-spacing:.42em;
+      color:rgba(130,195,34,.72); text-transform:uppercase;
+      display:block; margin-bottom:18px;
+    }
+    .section-rule { width:18px; height:1.5px; background:#82c322; margin-bottom:22px; opacity:.70; }
+    .btn-link {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.20em;
+      color:rgba(255,255,255,.40); text-transform:uppercase;
+      border-bottom:1px solid rgba(255,255,255,.12); padding-bottom:3px;
+      margin-top:24px;
+    }
+
+    /* ── REVEAL ANIMATION ── */
+    .rv {
+      opacity:0; transform:translateY(20px);
+      transition:opacity .65s ease, transform .65s cubic-bezier(0.16,1,0.3,1);
+    }
+    .rv.show { opacity:1; transform:translateY(0); }
+    .rv-d1 { transition-delay:.06s; }
+    .rv-d2 { transition-delay:.12s; }
+    .rv-d3 { transition-delay:.18s; }
+    .rv-d4 { transition-delay:.24s; }
+
+    /* ── ABOUT ── */
+    #about {
+      background:linear-gradient(to bottom, rgba(4,9,4,0.98) 0%, #060E06 100%);
+    }
+    #about h2 {
+      font-family:'Noto Sans JP',sans-serif;
+      font-size:clamp(2rem,9vw,3.2rem); font-weight:700;
+      color:#fff; line-height:1.15; margin-bottom:18px; letter-spacing:-.02em;
+    }
+    #about p { font-family:'Noto Sans JP',sans-serif; font-size:13px; color:rgba(255,255,255,.50); line-height:2.15; }
+
+    /* ── WHY US ── */
+    #whyus { background:#060E06; }
+    #whyus h2 {
+      font-family:'Noto Sans JP',sans-serif;
+      font-size:clamp(1.8rem,8vw,2.8rem); font-weight:700;
+      color:#fff; line-height:1.18; margin-bottom:32px; letter-spacing:-.02em;
+    }
+    .why-grid { display:grid; grid-template-columns:1fr 1fr; }
+    .why-card {
+      padding:22px 16px 22px 0;
+      border-top:1px solid rgba(255,255,255,.09);
+    }
+    .why-card:nth-child(2n) { padding-left:16px; padding-right:0; border-left:1px solid rgba(255,255,255,.09); }
+    .why-card:nth-child(1),.why-card:nth-child(2) { border-top:none; padding-top:0; }
+    .why-accent { width:14px; height:1.5px; background:#82c322; margin-bottom:12px; opacity:.75; }
+    .why-num { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:rgba(130,195,34,.40); line-height:1; margin-bottom:9px; display:block; }
+    .why-card h3 { font-family:'Noto Sans JP',sans-serif; font-size:12.5px; font-weight:700; color:#fff; margin-bottom:7px; }
+    .why-card p  { font-family:'Noto Sans JP',sans-serif; font-size:11px; color:rgba(255,255,255,.52); line-height:1.9; }
+
+    /* ── SERVICE ── */
+    #service {
+      background:linear-gradient(to bottom, #060E06, rgba(4,9,4,0.99));
+    }
+    #service h2 { font-family:'Noto Sans JP',sans-serif; font-size:clamp(1.6rem,7vw,2.6rem); font-weight:700; color:#fff; margin-bottom:24px; letter-spacing:-.02em; }
+    .service-list { border-top:1px solid rgba(255,255,255,.09); }
+    .service-item { padding:20px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+    .service-item:last-child { border-bottom:none; }
+    .svc-num  { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:rgba(130,195,34,.28); display:block; line-height:1; margin-bottom:6px; }
+    .svc-name { font-family:'Noto Sans JP',sans-serif; font-size:15px; font-weight:700; color:#fff; display:block; margin-bottom:6px; }
+    .svc-desc { font-family:'Noto Sans JP',sans-serif; font-size:12px; color:rgba(255,255,255,.52); line-height:1.9; }
+
+    /* ── VISION ── */
+    #vision {
+      background:
+        radial-gradient(ellipse 90% 60% at 85% 55%, rgba(130,195,34,0.065) 0%, transparent 70%),
+        #060E06;
+      text-align:right;
+    }
+    #vision .section-label { text-align:right; }
+    #vision h2 {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(5rem,23vw,7.5rem);
+      color:#fff; line-height:.92; letter-spacing:.04em; margin-bottom:22px;
+    }
+    #vision p { font-family:'Noto Sans JP',sans-serif; font-size:13px; color:rgba(255,255,255,.48); line-height:2.15; }
+    #vision .btn-link { justify-content:flex-end; display:flex; }
+
+    /* ── FLOW ── */
+    #flow { background:#060E06; }
+    #flow h2 { font-family:'Noto Sans JP',sans-serif; font-size:clamp(1.8rem,8vw,2.8rem); font-weight:700; color:#fff; margin-bottom:28px; letter-spacing:-.02em; }
+    .flow-step {
+      padding:18px 0 18px 20px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      position:relative;
+    }
+    .flow-step::before {
+      content:''; position:absolute; left:0; top:26px;
+      width:6px; height:6px; border-radius:50%;
+      background:#82c322; box-shadow:0 0 8px rgba(130,195,34,.55);
+    }
+    .flow-step:last-child { border-bottom:none; }
+    .flow-step-num { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; color:rgba(130,195,34,.50); line-height:1; display:block; margin-bottom:7px; }
+    .flow-step h3 { font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:7px; }
+    .flow-step p  { font-family:'Noto Sans JP',sans-serif; font-size:12px; color:rgba(255,255,255,.58); line-height:1.9; }
+
+    /* ── CONTACT ── */
+    #contact {
+      background:rgba(4,9,4,0.99);
+      border-top:1px solid rgba(255,255,255,0.07);
+    }
+    #contact h2 {
+      font-family:'Noto Sans JP',sans-serif;
+      font-size:clamp(1.9rem,9vw,3rem); font-weight:700;
+      color:#fff; line-height:1.15; margin-bottom:14px; letter-spacing:-.02em;
+    }
+    .contact-desc { font-family:'Noto Sans JP',sans-serif; font-size:12.5px; color:rgba(255,255,255,.38); line-height:2.1; margin-bottom:28px; }
+    .contact-info { display:flex; flex-direction:column; gap:11px; margin-bottom:36px; }
+    .contact-info-item { display:flex; align-items:baseline; gap:14px; }
+    .contact-info-label { font-family:'Inter',sans-serif; font-size:7.5px; letter-spacing:.28em; color:rgba(130,195,34,.58); text-transform:uppercase; min-width:60px; }
+    .contact-info-val   { font-family:'Inter',sans-serif; font-size:11.5px; color:rgba(255,255,255,.44); }
+    .form-divider { width:18px; height:1.5px; background:rgba(130,195,34,.55); margin-bottom:26px; }
+    .form-field { margin-bottom:22px; }
+    .form-label { font-family:'Inter',sans-serif; font-size:8px; letter-spacing:.25em; color:rgba(255,255,255,.48); text-transform:uppercase; display:block; margin-bottom:9px; }
+    .form-input, .form-select, .form-textarea {
+      width:100%; background:transparent;
+      border:none; border-bottom:1px solid rgba(255,255,255,.20);
+      color:#fff; font-family:'Noto Sans JP',sans-serif; font-size:16px;
+      padding:9px 0; outline:none;
+      transition:border-bottom-color .25s; border-radius:0; -webkit-appearance:none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-bottom-color:rgba(130,195,34,.65); }
+    .form-input::placeholder, .form-textarea::placeholder { color:rgba(255,255,255,.26); font-size:14px; }
+    .form-select {
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7' fill='none'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='rgba(255,255,255,0.22)' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 0 center; background-color:transparent; padding-right:22px;
+    }
+    .form-select option { background:#0d1a0d; color:#fff; }
+    .form-textarea { resize:none; min-height:80px; }
+    .form-submit {
+      width:100%; padding:14px; background:transparent;
+      border:1px solid rgba(130,195,34,.48); color:#82c322;
+      font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600;
+      letter-spacing:.22em; text-transform:uppercase; cursor:pointer;
+      transition:background .2s; margin-top:28px;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .form-submit:active { background:rgba(130,195,34,.08); }
+    .form-submit:disabled { opacity:.35; }
+    .form-note { font-family:'Inter',sans-serif; font-size:8.5px; color:rgba(255,255,255,.16); margin-top:14px; }
+    .form-thanks { font-family:'Noto Sans JP',sans-serif; font-size:14px; color:rgba(255,255,255,.60); line-height:2.2; padding:24px 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background:#040904; padding:40px 22px 24px;
+      border-top:1px solid rgba(255,255,255,0.06);
+    }
+    .ft-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+    .ft-logo-wrap { display:flex; align-items:center; gap:9px; }
+    .ft-logo-svg { width:30px; height:auto; }
+    .ft-logo-texts { display:flex; flex-direction:column; gap:1px; }
+    .ft-logo-name { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.18em; color:rgba(255,255,255,.38); text-transform:uppercase; }
+    .ft-logo-sub  { font-family:'Inter',sans-serif; font-size:7.5px; letter-spacing:.28em; color:rgba(255,255,255,.20); text-transform:uppercase; }
+    .ft-social { display:flex; gap:8px; }
+    .ft-social a { width:30px; height:30px; border:1px solid rgba(255,255,255,.10); border-radius:50%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.26); }
+    .ft-links { display:flex; flex-wrap:wrap; gap:12px 20px; margin-bottom:18px; }
+    .ft-links a { font-family:'Inter',sans-serif; font-size:9.5px; letter-spacing:.10em; color:rgba(255,255,255,.26); text-transform:uppercase; }
+    .ft-legal { display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+    .ft-legal a { font-family:'Noto Sans JP',sans-serif; font-size:11px; color:rgba(255,255,255,.20); }
+    .ft-copy { font-family:'Inter',sans-serif; font-size:9px; color:rgba(255,255,255,.13); letter-spacing:.04em; }
+    .ft-copy a { color:rgba(255,255,255,.18); }
+
+    /* ── STICKY CTA BAR ── */
+    .cta-bar {
+      position:fixed; bottom:0; left:0; right:0; z-index:90;
+      background:rgba(4,9,4,0.93);
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      border-top:1px solid rgba(130,195,34,0.18);
+      padding:10px 20px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      transform:translateY(100%);
+      transition:transform .4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .cta-bar.show { transform:translateY(0); }
+    .cta-bar-text { font-family:'Noto Sans JP',sans-serif; font-size:11px; color:rgba(255,255,255,.46); line-height:1.45; }
+    .cta-bar-btn {
+      flex-shrink:0; font-family:'Inter',sans-serif; font-size:9.5px; font-weight:600;
+      letter-spacing:.16em; text-transform:uppercase;
+      color:#82c322; border:1px solid rgba(130,195,34,.42);
+      padding:9px 18px; white-space:nowrap;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .cta-bar-btn:active { background:rgba(130,195,34,.08); }
+
+    /* ── Section divider bar ── */
+    .sec-bar {
+      width:100%; padding:0 22px;
+      display:flex; align-items:center; gap:14px;
+    }
+    .sec-bar::before, .sec-bar::after {
+      content:''; flex:1; height:1px; background:rgba(130,195,34,.12);
+    }
+    .sec-bar span { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:rgba(130,195,34,.20); letter-spacing:.10em; }
+  </style>
+</head>
+<body>
+
+<!-- Mobile nav overlay -->
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#about">About</a>
+  <a href="#whyus">Why Us</a>
+  <a href="#service">Service</a>
+  <a href="#flow">Flow</a>
+  <a class="nav-contact-m" href="#contact">Contact</a>
+</div>
+
+<!-- Header -->
+<header>
+  <a class="logo-wrap" href="#">
+    <svg class="logo-svg" viewBox="0 0 513 415" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12.65"  cy="35.79"  r="12.65" fill="#7dbd1f"/>
+      <circle cx="48.45"  cy="70.15"  r="7.66"  fill="#1ca93d"/>
+      <circle cx="60.80"  cy="33.73"  r="20.01" fill="#71b825"/>
+      <circle cx="94.87"  cy="68.72"  r="12.57" fill="#069c47"/>
+      <circle cx="127.35" cy="28.32"  r="23.84" fill="#69b32c"/>
+      <circle cx="176.11" cy="71.39"  r="11.48" fill="#76c026"/>
+      <circle cx="203.11" cy="21.48"  r="21.48" fill="#05925b"/>
+      <circle cx="242.91" cy="68.72"  r="24.58" fill="#6cb82b"/>
+      <circle cx="294.19" cy="23.32"  r="23.32" fill="#80c023"/>
+      <circle cx="333.22" cy="69.81"  r="18.73" fill="#089d46"/>
+      <circle cx="379.46" cy="25.54"  r="25.54" fill="#079c45"/>
+      <circle cx="418.63" cy="67.65"  r="13.62" fill="#67b92a"/>
+      <circle cx="447.88" cy="29.19"  r="18.24" fill="#7ac124"/>
+      <circle cx="462.96" cy="69.81"  r="7.63"  fill="#099a45"/>
+      <circle cx="500.00" cy="36.24"  r="12.92" fill="#82c322"/>
+      <circle cx="285.36" cy="110.98" r="14.49" fill="#7fc120"/>
+      <circle cx="214.45" cy="133.12" r="24.67" fill="#089a43"/>
+      <circle cx="273.00" cy="163.59" r="21.18" fill="#69b628"/>
+      <circle cx="284.83" cy="207.00" r="9.49"  fill="#059146"/>
+      <circle cx="221.70" cy="208.18" r="20.34" fill="#7dbf22"/>
+      <circle cx="265.43" cy="244.95" r="15.73" fill="#04905a"/>
+      <circle cx="221.70" cy="267.23" r="12.49" fill="#79be23"/>
+      <circle cx="271.53" cy="296.45" r="19.72" fill="#77bc24"/>
+      <circle cx="221.70" cy="334.26" r="20.34" fill="#6db828"/>
+      <circle cx="270.08" cy="358.05" r="12.37" fill="#6bcb3d"/>
+      <circle cx="234.04" cy="386.99" r="8.42"  fill="#64bf2e"/>
+      <circle cx="273.64" cy="401.28" r="14.29" fill="#069e44"/>
+    </svg>
+    <span class="logo-name">TOTSUKA</span>
+    <span class="logo-sub">TECH</span>
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+  <!-- Decorative SVG logo mark -->
+  <svg class="hero-deco-logo" viewBox="0 0 513 415" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="12.65"  cy="35.79"  r="12.65" fill="#82c322"/>
+    <circle cx="48.45"  cy="70.15"  r="7.66"  fill="#82c322"/>
+    <circle cx="60.80"  cy="33.73"  r="20.01" fill="#82c322"/>
+    <circle cx="94.87"  cy="68.72"  r="12.57" fill="#82c322"/>
+    <circle cx="127.35" cy="28.32"  r="23.84" fill="#82c322"/>
+    <circle cx="176.11" cy="71.39"  r="11.48" fill="#82c322"/>
+    <circle cx="203.11" cy="21.48"  r="21.48" fill="#82c322"/>
+    <circle cx="242.91" cy="68.72"  r="24.58" fill="#82c322"/>
+    <circle cx="294.19" cy="23.32"  r="23.32" fill="#82c322"/>
+    <circle cx="333.22" cy="69.81"  r="18.73" fill="#82c322"/>
+    <circle cx="379.46" cy="25.54"  r="25.54" fill="#82c322"/>
+    <circle cx="418.63" cy="67.65"  r="13.62" fill="#82c322"/>
+    <circle cx="447.88" cy="29.19"  r="18.24" fill="#82c322"/>
+    <circle cx="462.96" cy="69.81"  r="7.63"  fill="#82c322"/>
+    <circle cx="500.00" cy="36.24"  r="12.92" fill="#82c322"/>
+    <circle cx="285.36" cy="110.98" r="14.49" fill="#82c322"/>
+    <circle cx="214.45" cy="133.12" r="24.67" fill="#82c322"/>
+    <circle cx="273.00" cy="163.59" r="21.18" fill="#82c322"/>
+    <circle cx="284.83" cy="207.00" r="9.49"  fill="#82c322"/>
+    <circle cx="221.70" cy="208.18" r="20.34" fill="#82c322"/>
+    <circle cx="265.43" cy="244.95" r="15.73" fill="#82c322"/>
+    <circle cx="221.70" cy="267.23" r="12.49" fill="#82c322"/>
+    <circle cx="271.53" cy="296.45" r="19.72" fill="#82c322"/>
+    <circle cx="221.70" cy="334.26" r="20.34" fill="#82c322"/>
+    <circle cx="270.08" cy="358.05" r="12.37" fill="#82c322"/>
+    <circle cx="234.04" cy="386.99" r="8.42"  fill="#82c322"/>
+    <circle cx="273.64" cy="401.28" r="14.29" fill="#82c322"/>
+  </svg>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <p class="hero-badge">Bug Bounty Driven Security</p>
+    <h1 class="hero-tagline">攻撃者視点で、<br>脆弱性を、<br>ゼロへ。</h1>
+    <p class="hero-sub">Bug Bounty × AI&nbsp;&nbsp;·&nbsp;&nbsp;最短数日で診断開始&nbsp;&nbsp;·&nbsp;&nbsp;完全外部診断</p>
+    <a href="#contact" class="hero-cta">まず相談する&nbsp;&nbsp;→</a>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<section class="m-section" id="about">
+  <span class="section-label rv">About Us</span>
+  <h2 class="rv rv-d1">
+    攻撃者を知るから<br>だから、守れる。
+  </h2>
+  <p class="rv rv-d2">現役バグハンターが直接担当する、成功報酬型の脆弱性診断。<br>HackerOne・Bugcrowdでの実績を持つ本物の攻撃者視点と、AIによる広範囲スキャンで、見落としのないセキュリティを実現します。</p>
+</section>
+
+<!-- ── WHY US ── -->
+<section class="m-section" id="whyus">
+  <span class="section-label rv">Why Choose Us</span>
+  <h2 class="rv rv-d1">なぜ、<br>TOTSUKA TECHなのか。</h2>
+  <div class="why-grid">
+    <div class="why-card rv rv-d2">
+      <div class="why-accent"></div>
+      <span class="why-num">01</span>
+      <h3>本物の攻撃者が探す</h3>
+      <p>HackerOne・Bugcrowdで実績を持つ現役バグハンターが直接担当。理論ではなく、実際の攻撃手法で脆弱性を暴きます。</p>
+    </div>
+    <div class="why-card rv rv-d3">
+      <div class="why-accent"></div>
+      <span class="why-num">02</span>
+      <h3>成功報酬型、リスクゼロ</h3>
+      <p>脆弱性が発見されなければ費用は発生しません。成功報酬型だからこそ、本気で探します。</p>
+    </div>
+    <div class="why-card rv rv-d2" style="margin-top:1px;">
+      <div class="why-accent"></div>
+      <span class="why-num">03</span>
+      <h3>AI × 人力のハイブリッド</h3>
+      <p>AIによる広範囲の自動スキャンと、バグハンターの深い手動検証を組み合わせ。見落としを限りなくゼロへ。</p>
+    </div>
+    <div class="why-card rv rv-d3" style="margin-top:1px;">
+      <div class="why-accent"></div>
+      <span class="why-num">04</span>
+      <h3>最短数日で着手</h3>
+      <p>機密情報の提出不要。完全外部診断だから、相談から最短数日でセキュリティ診断を開始できます。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICE ── -->
+<section class="m-section" id="service">
+  <span class="section-label rv">Service</span>
+  <h2 class="rv rv-d1">私たちのサービス</h2>
+  <div class="service-list">
+    <div class="service-item rv rv-d1">
+      <span class="svc-num">01</span>
+      <span class="svc-name">成功報酬型脆弱性診断</span>
+      <span class="svc-desc">Webアプリ・API・モバイルアプリを対象に、バグハンター視点で実践的な脆弱性診断を実施します。</span>
+    </div>
+    <div class="service-item rv rv-d2">
+      <span class="svc-num">02</span>
+      <span class="svc-name">Webアプリ / API 診断</span>
+      <span class="svc-desc">OWASP Top 10 を基軸に、ビジネスロジック欠陥まで含めた網羅的な診断を実施。具体的な改修提案までセットで提供します。</span>
+    </div>
+    <div class="service-item rv rv-d3">
+      <span class="svc-num">03</span>
+      <span class="svc-name">クラウド / AI サービス診断</span>
+      <span class="svc-desc">AWS / GCP 上のインフラ設定ミスやAI・LLMサービス固有の脆弱性（プロンプトインジェクション等）を診断します。</span>
+    </div>
+    <div class="service-item rv rv-d4">
+      <span class="svc-num">04</span>
+      <span class="svc-name">AIプロダクト開発</span>
+      <span class="svc-desc">自社でAIを活用したプロダクトを企画・開発・運営。セキュリティを設計段階から組み込んだAIサービスを構築します。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── VISION ── -->
+<section class="m-section" id="vision">
+  <span class="section-label rv">Vision</span>
+  <h2 class="rv rv-d1">HACK<br>TO<br>PROTECT</h2>
+  <p class="rv rv-d2">攻撃者の視点を持つ者だけが、<br>本当の防御を設計できる。<br>それが、私たちの信念です。</p>
+</section>
+
+<!-- ── FLOW ── -->
+<section class="m-section" id="flow">
+  <span class="section-label rv">How It Works</span>
+  <h2 class="rv rv-d1">診断の流れ</h2>
+  <div class="flow-steps">
+    <div class="flow-step rv rv-d1">
+      <span class="flow-step-num">01</span>
+      <h3>無料相談</h3>
+      <p>まずは30分のオンライン相談から。診断範囲・ゴール・リスク感をヒアリングします。</p>
+    </div>
+    <div class="flow-step rv rv-d2">
+      <span class="flow-step-num">02</span>
+      <h3>診断開始</h3>
+      <p>機密情報の提出は不要。契約締結後、最短数日で外部からの診断を開始します。</p>
+    </div>
+    <div class="flow-step rv rv-d3">
+      <span class="flow-step-num">03</span>
+      <h3>脆弱性レポート</h3>
+      <p>発見した脆弱性を深刻度・CVSSスコア・再現手順・修正方法付きで報告します。</p>
+    </div>
+    <div class="flow-step rv rv-d4">
+      <span class="flow-step-num">04</span>
+      <h3>修正確認・完了</h3>
+      <p>修正後の再確認まで無償でサポート。リリース後も継続的な診断でリスクを最小化します。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="m-section" id="contact">
+  <span class="section-label rv">Get In Touch</span>
+  <h2 class="rv rv-d1">あなたのサービス、<br>安全ですか？</h2>
+  <p class="contact-desc rv rv-d2">脆弱性は、発見されるまで存在しないわけではありません。<br>まず相談ください。最短数日で診断を開始します。</p>
+  <div class="form-divider rv rv-d2"></div>
+  <div class="contact-info rv rv-d3">
+    <div class="contact-info-item">
+      <span class="contact-info-label">Email</span>
+      <span class="contact-info-val">contact@totsuka-tech.com</span>
+    </div>
+    <div class="contact-info-item">
+      <span class="contact-info-label">Response</span>
+      <span class="contact-info-val">通常48時間以内にご返答</span>
+    </div>
+    <div class="contact-info-item">
+      <span class="contact-info-label">First Call</span>
+      <span class="contact-info-val">30分 / オンライン無料相談</span>
+    </div>
+  </div>
+  <div class="rv rv-d4">
+    <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <div class="form-field">
+        <label class="form-label" for="company">会社名 / 屋号</label>
+        <input class="form-input" id="company" name="company" type="text" placeholder="株式会社〇〇">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="name">お名前 *</label>
+        <input class="form-input" id="name" name="name" type="text" placeholder="山田 太郎" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="email">メールアドレス *</label>
+        <input class="form-input" id="email" name="email" type="email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="type">ご依頼の種別</label>
+        <select class="form-select" id="type" name="type">
+          <option value="">選択してください</option>
+          <option value="vuln">成功報酬型脆弱性診断</option>
+          <option value="webapp">Webアプリ / API 診断</option>
+          <option value="cloud">クラウド / AI サービス診断</option>
+          <option value="ai">AIプロダクト開発</option>
+          <option value="other">その他・まずは相談したい</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="message">お問い合わせ内容 *</label>
+        <textarea class="form-textarea" id="message" name="message" placeholder="課題・要件・予算感など、お気軽にご記入ください。" required></textarea>
+      </div>
+      <button type="submit" class="form-submit">送信する&nbsp;&nbsp;→</button>
+      <p class="form-note">* は必須項目です</p>
+    </form>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="ft-top">
+    <div class="ft-logo-wrap">
+      <svg class="ft-logo-svg" viewBox="0 0 513 415" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12.65"  cy="35.79"  r="12.65" fill="#7dbd1f" opacity=".35"/>
+        <circle cx="60.80"  cy="33.73"  r="20.01" fill="#71b825" opacity=".35"/>
+        <circle cx="127.35" cy="28.32"  r="23.84" fill="#69b32c" opacity=".35"/>
+        <circle cx="203.11" cy="21.48"  r="21.48" fill="#05925b" opacity=".35"/>
+        <circle cx="242.91" cy="68.72"  r="24.58" fill="#6cb82b" opacity=".35"/>
+        <circle cx="294.19" cy="23.32"  r="23.32" fill="#80c023" opacity=".35"/>
+        <circle cx="379.46" cy="25.54"  r="25.54" fill="#079c45" opacity=".35"/>
+        <circle cx="447.88" cy="29.19"  r="18.24" fill="#7ac124" opacity=".35"/>
+        <circle cx="500.00" cy="36.24"  r="12.92" fill="#82c322" opacity=".35"/>
+        <circle cx="214.45" cy="133.12" r="24.67" fill="#089a43" opacity=".35"/>
+        <circle cx="221.70" cy="208.18" r="20.34" fill="#7dbf22" opacity=".35"/>
+        <circle cx="221.70" cy="334.26" r="20.34" fill="#6db828" opacity=".35"/>
+        <circle cx="273.64" cy="401.28" r="14.29" fill="#069e44" opacity=".35"/>
+      </svg>
+      <div class="ft-logo-texts">
+        <span class="ft-logo-name">TOTSUKA</span>
+        <span class="ft-logo-sub">TECH</span>
+      </div>
+    </div>
+    <div class="ft-social">
+      <a href="#" aria-label="X"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg></a>
+    </div>
+  </div>
+  <div class="ft-links">
+    <a href="#about">About</a>
+    <a href="#whyus">Why Us</a>
+    <a href="#service">Service</a>
+    <a href="#flow">Flow</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="ft-legal">
+    <a href="privacy.html">プライバシーポリシー</a>
+    <a href="terms.html">利用規約</a>
+    <a href="tokusho.html">特定商取引法に基づく表記</a>
+  </div>
+  <p class="ft-copy">© 2026 Totsuka Tech, LLC. All Rights Reserved.<br><a href="mailto:contact@totsuka-tech.com">contact@totsuka-tech.com</a></p>
+</footer>
+
+<!-- Sticky CTA bar -->
+<div class="cta-bar" id="cta-bar">
+  <div class="cta-bar-text">まずは30分の無料相談から</div>
+  <a href="#contact" class="cta-bar-btn">相談する →</a>
+</div>
+
+<script>
+/* ── Hamburger ── */
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+hamburger.addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+  mobileNav.classList.toggle('open');
+});
+mobileNav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.body.classList.remove('nav-open');
+    mobileNav.classList.remove('open');
+  });
+});
+
+/* ── CSS Particles ── */
+const particleData = [
+  [6,0,1.4,9,0],[13,5,1,12,2.5],[20,0,1.8,8,1],[30,0,1.2,10.5,3.5],
+  [38,8,1,8,0.5],[46,0,1.6,11,2],[55,5,1.2,9.5,1.5],[62,0,1,13,4],
+  [70,6,1.8,8.5,0.5],[78,0,1.2,10,3],[85,5,1,8,2],[91,0,1.5,11.5,1],
+  [25,0,1,9,4.5],[50,0,1.8,8,3],[74,8,1.2,10,0.5],
+];
+const pfrag = document.createDocumentFragment();
+particleData.forEach(([l,b,s,dur,del]) => {
+  const span = document.createElement('span');
+  span.style.cssText = `left:${l}%;bottom:${b}%;width:${s}px;height:${s}px;animation-duration:${dur}s;animation-delay:${del}s;`;
+  pfrag.appendChild(span);
+});
+document.getElementById('particles').appendChild(pfrag);
+
+/* ── Intersection Observer: reveal on scroll ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
+}, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
+document.querySelectorAll('.rv').forEach(el => observer.observe(el));
+
+/* ── Sticky CTA bar (shows after hero) ── */
+const ctaBar = document.getElementById('cta-bar');
+const heroDone = window.innerHeight * 0.65;
+window.addEventListener('scroll', () => {
+  ctaBar.classList.toggle('show', window.scrollY > heroDone);
+}, { passive: true });
+
+/* ── Contact form AJAX ── */
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = contactForm.querySelector('.form-submit');
+    const orig = btn.textContent;
+    btn.textContent = '送信中...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(contactForm.action, {
+        method: 'POST', body: new FormData(contactForm),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        contactForm.innerHTML = '<p class="form-thanks">お問い合わせを受け付けました。<br>3営業日以内に担当者よりご連絡いたします。</p>';
+      } else {
+        btn.textContent = 'もう一度お試しください'; btn.disabled = false;
+      }
+    } catch {
+      btn.textContent = 'もう一度お試しください'; btn.disabled = false;
+    }
+  });
+}
+</script>
+</body>
+</html>
